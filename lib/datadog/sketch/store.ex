@@ -48,10 +48,10 @@ defmodule Datadog.Sketch.Store do
   @callback key_at_rank(t(), float()) :: integer()
 
   @doc """
-  Returns a `Datadog.Sketch.Protobuf.Store` struct for Protobuf
-  encoding. Used for sending data to Datadog.
+  Returns a struct for Protobuf encoding. Used for sending data to
+  Datadog.
   """
-  @callback to_proto(t()) :: Datadog.Sketch.Protobuf.Store.t()
+  @callback to_proto(t()) :: struct()
 
   @doc """
   Maps over all values and multiplies by the given weight.
@@ -108,10 +108,10 @@ defmodule Datadog.Sketch.Store do
   def key_at_rank(%{__struct__: module} = self, rank), do: module.key_at_rank(self, rank)
 
   @doc """
-  Returns a `Datadog.Sketch.Protobuf.Store` struct for Protobuf
-  encoding. Used for sending data to Datadog.
+  Returns a struct for Protobuf encoding. Used for sending data to
+  Datadog.
   """
-  @spec to_proto(t()) :: Datadog.Sketch.Protobuf.Store.t()
+  @spec to_proto(t()) :: struct()
   def to_proto(%{__struct__: module} = self), do: module.to_proto(self)
 
   @doc """

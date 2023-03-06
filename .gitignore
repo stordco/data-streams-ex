@@ -1,26 +1,67 @@
-# The directory Mix will write compiled artifacts to.
-/_build/
+# Created by https://www.toptal.com/developers/gitignore/api/elixir,phoenix,vim,macosx
+# Edit at https://www.toptal.com/developers/gitignore?templates=elixir,phoenix,vim,macosx
 
-# If you run "mix test --cover", coverage assets end up here.
-/cover/
-
-# The directory Mix downloads your dependencies sources to.
-/deps/
-
-# Where third-party dependencies like ExDoc output generated docs.
-/doc/
-
-# Ignore .fetch files in case you like to edit your project deps locally.
+### Elixir ###
+/_build
+/cover
+/deps
+/doc
 /.fetch
-
-# If the VM crashes, it generates a dump, let's ignore it too.
 erl_crash.dump
-
-# Also ignore archive artifacts (built via "mix archive.build").
 *.ez
+*.beam
+/config/*.secret.exs
+.elixir_ls/
 
-# Ignore package tarball (built via "mix hex.build").
-dd_data_streams_ex-*.tar
+### Elixir Patch ###
 
-# Temporary files, for example, from tests.
-/tmp/
+#!! ERROR: macosx is undefined. Use list command to see defined gitignore types !!#
+
+### Phoenix ###
+# gitignore template for Phoenix projects
+# website: http://www.phoenixframework.org/
+#
+# Recommended template: Elixir.gitignore
+
+# Temporary files
+/tmp
+
+# Static artifacts
+/node_modules
+/assets/node_modules
+
+# Since we are building assets from web/static,
+# we ignore priv/static. You may want to comment
+# this depending on your deployment strategy.
+/priv/static/
+
+# Installer-related files
+/installer/_build
+/installer/tmp
+/installer/doc
+/installer/deps
+
+### Vim ###
+# Swap
+[._]*.s[a-v][a-z]
+!*.svg  # comment out if you don't need vector files
+[._]*.sw[a-p]
+[._]s[a-rt-v][a-z]
+[._]ss[a-gi-z]
+[._]sw[a-p]
+
+# Session
+Session.vim
+Sessionx.vim
+
+# Temporary
+.netrwhist
+*~
+# Auto-generated tag files
+tags
+# Persistent undo
+[._]*.un~
+
+# End of https://www.toptal.com/developers/gitignore/api/elixir,phoenix,vim,macosx
+
+.vscode

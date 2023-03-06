@@ -4,7 +4,7 @@ defmodule Datadog.DataStreams.MixProject do
   def project do
     [
       app: :dd_data_streams,
-      name: "Data Streams",
+      name: "Data Streams Ex",
       description: "DataDog data streams library for Elixir",
       version: "0.1.0",
       elixir: "~> 1.11",
@@ -54,7 +54,8 @@ defmodule Datadog.DataStreams.MixProject do
   defp docs do
     [
       extras: ["README.md", "CHANGELOG.md"],
-      main: "readme"
+      main: "readme",
+      skip_undefined_reference_warnings_on: ["CHANGELOG.md"]
     ]
   end
 end

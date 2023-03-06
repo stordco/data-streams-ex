@@ -48,12 +48,12 @@ defmodule Datadog.Sketch.IndexMapping.Logarithmic do
       min_indexable_value:
         max(
           :math.exp((Utils.min_int_32() - index_offset) / multiplier + 1),
-          IndexMapping.min_normal_float_64() * gamma
+          Utils.min_normal_float_64() * gamma
         ),
       max_indexable_value:
         min(
           :math.exp((Utils.max_int_32() - index_offset) / multiplier - 1),
-          :math.exp(IndexMapping.exp_overflow()) / (2 * gamma) * (gamma + 1)
+          :math.exp(Utils.exp_overflow()) / (2 * gamma) * (gamma + 1)
         )
     }
   end

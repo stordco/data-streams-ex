@@ -1,0 +1,30 @@
+---
+name: PR
+
+on:
+  pull_request:
+    types:
+      - edited
+      - opened
+      - reopened
+      - synchronize
+
+jobs:
+  title:
+    name: Check Title
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v3
+
+      - name: Check
+        uses: stordco/actions-pr-title@v1.0.0
+        with:
+          regex: '^(feat!|fix!|feat|fix|chore):\s.*'
+          hint: |
+            You can pass the following formats:
+
+            feat: some title of the PR
+            fix: some title of the PR
+            chore: update some action

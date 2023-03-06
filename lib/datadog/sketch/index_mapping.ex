@@ -17,12 +17,24 @@ defmodule Datadog.Sketch.IndexMapping do
   """
   @callback equals(t(), t()) :: boolean()
 
+  @doc """
+  Returns an index value after mapping.
+  """
   @callback index(t(), float()) :: integer()
 
+  @doc """
+  Returns a value after mapping.
+  """
   @callback value(t(), integer()) :: float()
 
+  @doc """
+  Returns the lower bound the mapping can contain.
+  """
   @callback lower_bound(t(), integer()) :: float()
 
+  @doc """
+  Returns the relative accuracy of the mapping.
+  """
   @callback relative_accuracy(t()) :: float()
 
   @doc """
@@ -36,23 +48,10 @@ defmodule Datadog.Sketch.IndexMapping do
   @callback max_indexable_value(t()) :: float()
 
   @doc """
-  Returns a `Datadog.Sketch.Protobuf.IndexMapping` Protobuf-able
-  struct for the index mapping. Used for sending data to Datadog.
+  Returns a Protobuf-able struct for the index mapping. Used for
+  sending data to Datadog.
   """
-  @callback to_proto(t()) :: Datadog.Sketch.Protobuf.IndexMapping.t()
-
-  @doc """
-  The value at which golang math.Exp overflows. This is golang
-  specific, but we want to match implementation details.
-  """
-  @spec exp_overflow() :: number()
-  def exp_overflow, do: 7.094361393031e+02
-
-  @doc """
-  The minimum value of golang float64. 2^(-1022)
-  """
-  @spec min_normal_float_64() :: number()
-  def min_normal_float_64, do: 2.2250738585072014e-308
+  @callback to_proto(t()) :: struct()
 
   @doc """
   Checks if an index mapping matches another index mapping.
@@ -61,17 +60,26 @@ defmodule Datadog.Sketch.IndexMapping do
   def equals(%{__struct__: module} = self, other), do: module.equals(self, other)
 
   @doc """
-  Checks if an index mapping matches another index mapping.
+  Returns an index value after mapping.
   """
   @spec index(t(), float()) :: integer()
   def index(%{__struct__: module} = self, value), do: module.index(self, value)
 
+  @doc """
+  Returns a value after mapping.
+  """
   @spec value(t(), integer()) :: float()
   def value(%{__struct__: module} = self, index), do: module.value(self, index)
 
+  @doc """
+  Returns the lower bound the mapping can contain.
+  """
   @spec lower_bound(t(), integer()) :: float()
   def lower_bound(%{__struct__: module} = self, index), do: module.lower_bound(self, index)
 
+  @doc """
+  Returns the relative accuracy of the mapping.
+  """
   @spec relative_accuracy(t()) :: float()
   def relative_accuracy(%{__struct__: module} = self), do: module.relative_accuracy(self)
 
@@ -88,12 +96,15 @@ defmodule Datadog.Sketch.IndexMapping do
   def max_indexable_value(%{__struct__: module} = self), do: module.max_indexable_value(self)
 
   @doc """
-  Returns a `Datadog.Sketch.Protobuf.IndexMapping` Protobuf-able
-  struct for the index mapping. Used for sending data to Datadog.
+  Returns a Protobuf-able struct for the index mapping. Used for sending
+  data to Datadog.
   """
-  @spec to_proto(t()) :: Datadog.Sketch.Protobuf.IndexMapping.t()
+  @spec to_proto(t()) :: struct()
   def to_proto(%{__struct__: module} = self), do: module.to_proto(self)
 
+  @doc """
+  Checks if the two values are within the tolerance given.
+  """
   @spec within_tolerance(float(), float(), float()) :: bool()
   def within_tolerance(x, y, tolerance) do
     if x == 0 or y == 0 do

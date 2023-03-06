@@ -11,7 +11,7 @@ defmodule Datadog.Sketch do
   because it's pulled directly from the [`sketches-go`][sg] library and kept
   similar for ease of debugging and backporting fixes.
 
-  [sg]: sketches-go
+  [sg]: https://github.com/DataDog/sketches-go
   [dd]: https://github.com/moosecodebv/dog_sketch
   """
 
@@ -252,10 +252,10 @@ defmodule Datadog.Sketch do
     do: negative_value_store
 
   @doc """
-  Returns a `Datadog.Sketch.Protobuf.DDSketch` Protobuf-able
-  struct for the sketch. Used for sending data to Datadog.
+  Returns a Protobuf-able struct for the sketch. Used for sending data to
+  Datadog.
   """
-  @spec to_proto(t()) :: Protobuf.DDSketch.t()
+  @spec to_proto(t()) :: struct()
   def to_proto(sketch) do
     %Protobuf.DDSketch{
       mapping: IndexMapping.to_proto(sketch.index_mapping),
