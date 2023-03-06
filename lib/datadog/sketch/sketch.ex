@@ -116,10 +116,11 @@ defmodule Datadog.Sketch do
     do: raise(ArgumentError, message: "The quantile must be between 0 and 1.")
 
   def get_value_at_quantile(sketch, quantile) do
-    if empty?(sketch) do
+    count = get_count(sketch)
+
+    if count == 0.0 do
       nil
     else
-      count = get_count(sketch)
       rank = quantile * (count - 1)
       negative_value_count = Store.total_count(sketch.negative_value_store)
 
@@ -131,8 +132,9 @@ defmodule Datadog.Sketch do
           )
 
         rank < sketch.zero_count + negative_value_count ->
-          0
+          0.0
 
+        true ->
           IndexMapping.value(
             sketch.index_mapping,
             Store.key_at_rank(
