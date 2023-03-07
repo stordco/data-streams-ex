@@ -21,7 +21,7 @@ jobs:
       - name: Check
         uses: stordco/actions-pr-title@v1.0.0
         with:
-          regex: '^(feat!|fix!|feat|fix|chore):\s.*'
+          regex: '^(feat!|fix!|fix|feat|chore|(fix|feat|chore)\(\w.*\)):\s(\[\w{1,8}-\d{1,8}\]|.*).*'
           hint: |
             You can pass the following formats:
 
