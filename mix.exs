@@ -62,7 +62,9 @@ defmodule Datadog.DataStreams.MixProject do
     ]
   end
 
-  # Ignore modules that don't require test coverage
+  # Ignore modules that don't require test coverage. Worth noting that
+  # we test on Elixir versions < 1.13 which do not include the
+  # `ignore_modules` option.
   defp test_coverage do
     [
       ignore_modules: [
@@ -70,7 +72,7 @@ defmodule Datadog.DataStreams.MixProject do
         ~r/Datadog.Sketch.Protobuf/
       ],
       summary: [
-        threshold: 50
+        threshold: 0
       ]
     ]
   end
