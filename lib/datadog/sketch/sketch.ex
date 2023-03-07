@@ -11,10 +11,6 @@ defmodule Datadog.Sketch do
   because it's pulled directly from the [`sketches-go`][sg] library and kept
   similar for ease of debugging and backporting fixes.
 
-  `Datadog.Sketch` also implements the `Enumerable` protocol for easy access to
-  data stored. All keys and values will be processed by the `IndexMapping`
-  module before being enumerated. It also includes all zero values.
-
   [sg]: https://github.com/DataDog/sketches-go
   [dd]: https://github.com/moosecodebv/dog_sketch
   """
