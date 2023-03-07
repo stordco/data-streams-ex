@@ -1,8 +1,7 @@
-defmodule DdDataStreamsExTest do
-  use ExUnit.Case
-  doctest DdDataStreamsEx
+defmodule Datadog.SketchTest do
+  use ExUnit.Case, async: true
 
-  test "greets the world" do
-    assert DdDataStreamsEx.hello() == :world
-  end
+  alias Datadog.Sketch
+
+  doctest Datadog.Sketch
 end

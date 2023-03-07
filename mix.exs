@@ -13,7 +13,8 @@ defmodule Datadog.DataStreams.MixProject do
       deps: deps(),
       docs: docs(),
       package: package(),
-      source_url: "https://github.com/stordco/data-streams-ex"
+      source_url: "https://github.com/stordco/data-streams-ex",
+      test_coverage: test_coverage()
     ]
   end
 
@@ -40,6 +41,7 @@ defmodule Datadog.DataStreams.MixProject do
     ]
   end
 
+  # Used when packaging for publishing to Hex.pm
   defp package do
     [
       files: ~w(lib mix.exs .formatter.exs README.md CHANGELOG.md),
@@ -51,11 +53,25 @@ defmodule Datadog.DataStreams.MixProject do
     ]
   end
 
+  # Include useful markdown files in built documentation
   defp docs do
     [
       extras: ["README.md", "CHANGELOG.md"],
       main: "readme",
       skip_undefined_reference_warnings_on: ["CHANGELOG.md"]
+    ]
+  end
+
+  # Ignore modules that don't require test coverage
+  defp test_coverage do
+    [
+      ignore_modules: [
+        ~r/Enumerable/,
+        ~r/Datadog.Sketch.Protobuf/
+      ],
+      summary: [
+        threshold: 50
+      ]
     ]
   end
 end
