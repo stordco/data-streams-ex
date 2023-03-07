@@ -6,7 +6,7 @@ defmodule Datadog.Sketch.IndexMapping.Logarithmic do
   mapping floating-point values to integers.
 
   Note, since Erlang (and therefor Elixir) do math pretty differently than
-  golang, this module does not contain a min or max indexable value., This
+  golang, this module does not contain a min or max indexable value. This
   follows in line with the Erlang philosophy of "let it crash" and simplifies
   our logic handling.
   """
