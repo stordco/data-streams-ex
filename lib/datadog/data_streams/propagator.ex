@@ -37,6 +37,39 @@ defmodule Datadog.DataStreams.Propagator do
   def propagation_key_base64, do: @propagation_key_base64
 
   @doc """
+  Encodes a pathway into a list or map of headers.
+
+  ## Examples
+
+      iex> Propagator.encode_header([], %Pathway{hash: 17210443572488294574, pathway_start: 1677632342000000000, edge_start: 1677632342000000000})
+      [{"#{@propagation_key}", <<174, 208, 17, 141, 62, 199, 215, 238, 224, 159, 240, 170, 211, 97, 224, 159, 240, 170, 211, 97>>}]
+
+      iex> Propagator.encode_header(%{}, %Pathway{hash: 17210443572488294574, pathway_start: 1677632342000000000, edge_start: 1677632342000000000})
+      %{"#{@propagation_key}" => <<174, 208, 17, 141, 62, 199, 215, 238, 224, 159, 240, 170, 211, 97, 224, 159, 240, 170, 211, 97>>}
+
+  """
+  @spec encode_header(list({binary(), binary()}), Pathway.t()) :: list({binary(), binary()})
+  @spec encode_header(%{required(binary()) => binary()}, Pathway.t()) :: %{
+          required(binary()) => binary()
+        }
+  @spec encode_header(any(), Pathway.t()) :: any()
+  def encode_header(headers, pathway) when is_map(headers),
+    do: headers |> Enum.to_list() |> encode_header(pathway) |> Map.new()
+
+  def encode_header(headers, pathway) when is_list(headers) do
+    removed_headers =
+      headers
+      |> Enum.map(fn {key, value} -> {String.downcase(key), value} end)
+      |> Enum.reject(fn {key, _value} ->
+        key in [@propagation_key_base64, @propagation_key]
+      end)
+
+    removed_headers ++ [{@propagation_key, encode(pathway)}]
+  end
+
+  def encode_header(value), do: value
+
+  @doc """
   Encodes a pathway to a string able to be placed in a header.
 
   ## Examples
@@ -96,6 +129,45 @@ defmodule Datadog.DataStreams.Propagator do
     |> Protobuf.Wire.Varint.encode()
     |> IO.iodata_to_binary()
   end
+
+  @doc """
+  Decodes a pathway from a list or map of headers. If no matching header, or
+  if the header is invalid, `nil` is returned.
+
+  ## Examples
+
+      iex> Propagator.decode_header([{"#{@propagation_key_base64}", "rtARjT7H1+7gn/Cq02Hgn/Cq02E="}])
+      %Pathway{hash: 17210443572488294574, pathway_start: 1677632342000000000, edge_start: 1677632342000000000}
+
+      iex> Propagator.decode_header(%{"#{@propagation_key}" => <<174, 208, 17, 141, 62, 199, 215, 238, 224, 159, 240, 170, 211, 97, 224, 159, 240, 170, 211, 97>>})
+      %Pathway{hash: 17210443572488294574, pathway_start: 1677632342000000000, edge_start: 1677632342000000000}
+
+      iex> Propagator.decode_header(%{"content-type" => "application-json"})
+      nil
+
+  """
+  @spec decode_header(list({binary(), binary()})) :: Pathway.t() | nil
+  @spec decode_header(%{required(binary()) => binary()}) :: Pathway.t() | nil
+  @spec decode_header(any()) :: nil
+  def decode_header(headers) when is_map(headers),
+    do: headers |> Enum.to_list() |> decode_header()
+
+  def decode_header(headers) when is_list(headers) do
+    found_header =
+      headers
+      |> Enum.map(fn {key, value} -> {String.downcase(key), value} end)
+      |> Enum.find(fn {key, _value} ->
+        key in [@propagation_key_base64, @propagation_key]
+      end)
+
+    case found_header do
+      {@propagation_key_base64, value} -> decode_str(value)
+      {@propagation_key, value} -> decode(value)
+      _ -> nil
+    end
+  end
+
+  def decode_header(_), do: nil
 
   @doc """
   Tries to decode a value into a pathway.

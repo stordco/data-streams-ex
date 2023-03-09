@@ -95,8 +95,10 @@ defmodule Datadog.DataStreams.Aggregator do
         end)
       end)
 
+    origin_timestamp = point.timestamp - point.pathway_latency
+
     new_ts_type_origin_buckets =
-      Aggregator.Bucket.upsert(state.ts_type_origin_buckets, point.timestamp, fn bucket ->
+      Aggregator.Bucket.upsert(state.ts_type_origin_buckets, origin_timestamp, fn bucket ->
         Aggregator.Group.upsert(bucket.points, point, fn group ->
           Aggregator.Group.add(group, point)
         end)
@@ -129,8 +131,8 @@ defmodule Datadog.DataStreams.Aggregator do
     Task.async(fn ->
       payload =
         Payload.new()
-        |> Payload.add_buckets(past_ts_type_current_buckets)
-        |> Payload.add_buckets(past_ts_type_origin_buckets)
+        |> Payload.add_buckets(past_ts_type_current_buckets, :current)
+        |> Payload.add_buckets(past_ts_type_origin_buckets, :origin)
 
       with {:ok, encoded_payload} <- Payload.encode(payload),
            :ok <- Transport.send_pipeline_stats(encoded_payload) do

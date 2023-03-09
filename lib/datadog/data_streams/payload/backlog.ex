@@ -11,7 +11,7 @@ defmodule Datadog.DataStreams.Payload.Backlog do
 end
 
 defimpl Msgpax.Packer, for: Datadog.DataStreams.Payload.Backlog do
-  def pack(data) do
+  def pack(_data) do
     []
   end
 end

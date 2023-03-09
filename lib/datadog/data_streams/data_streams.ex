@@ -42,6 +42,14 @@ defmodule Datadog.DataStreams do
 
   ## Running
 
+  Once installed, if `:dd_agent_streams` `:agent` is `enabled?`, the
+  `Datadog.DataStreams.Aggregator` will start automatically and start sending
+  metrics. Just instrument your data pipelines!
+
+  ## Integrations
+
+  - `Datadog.DataStreams.Integrations.Kafka`
+
   ## Telemetry
 
   Similar to the golang implementation, we export a couple of `:telemetry`

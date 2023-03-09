@@ -3,6 +3,8 @@ defmodule Datadog.DataStreams.Payload.Point do
 
   alias Datadog.Sketch
 
+  alias Datadog.DataStreams.Aggregator
+
   defstruct edge_tags: [],
             hash: 0,
             parent_hash: 0,
@@ -10,7 +12,7 @@ defmodule Datadog.DataStreams.Payload.Point do
             edge_latency: Sketch.new_default(),
             timestamp_type: :current
 
-  @type timestamp :: :current | :origin
+  @type timestamp_type :: :current | :origin
 
   @type t :: %__MODULE__{
           edge_tags: [String.t()],
@@ -18,8 +20,23 @@ defmodule Datadog.DataStreams.Payload.Point do
           parent_hash: non_neg_integer(),
           pathway_latency: Sketch.t(),
           edge_latency: Sketch.t(),
-          timestamp_type: timestamp()
+          timestamp_type: timestamp_type()
         }
+
+  @doc """
+  Creates a new payload point from an aggregator group.
+  """
+  @spec new(Aggregator.Group.t(), timestamp_type()) :: t()
+  def new(%Aggregator.Group{} = group, timestamp_type) do
+    %__MODULE__{
+      edge_tags: group.edge_tags,
+      hash: group.hash,
+      parent_hash: group.parent_hash,
+      pathway_latency: group.pathway_latency,
+      edge_latency: group.edge_latency,
+      timestamp_type: timestamp_type
+    }
+  end
 end
 
 defimpl Msgpax.Packer, for: Datadog.DataStreams.Payload.Point do

@@ -44,20 +44,23 @@ defmodule Datadog.DataStreams.Payload do
   Adds a map of buckets. This is the format the the aggregator uses internally.
   We throw out the hash and just keep the buckets.
   """
-  @spec add_buckets(t(), %{required(non_neg_integer()) => Aggregator.Bucket.t()}) :: t()
-  def add_buckets(payload, buckets) do
+  @spec add_buckets(
+          t(),
+          %{required(non_neg_integer()) => Aggregator.Bucket.t()},
+          Payload.Point.timestamp_type()
+        ) :: t()
+  def add_buckets(payload, buckets, timestamp_type) do
     buckets
     |> Map.values()
-    |> Enum.reduce(payload, &add_bucket(&2, &1))
+    |> Enum.reduce(payload, &add_bucket(&2, &1, timestamp_type))
   end
 
   @doc """
   Adds an aggregator bucket to the payload.
   """
-  @spec add_bucket(t(), Aggregator.Bucket.t()) :: t()
-  def add_bucket(%__MODULE__{} = payload, %Aggregator.Bucket{} = bucket) do
-    # TODO
-    payload
+  @spec add_bucket(t(), Aggregator.Bucket.t(), Payload.Point.timestamp_type()) :: t()
+  def add_bucket(%__MODULE__{} = payload, %Aggregator.Bucket{} = bucket, timestamp_type) do
+    %{payload | stats: payload.stats ++ [Payload.Bucket.new(bucket, timestamp_type)]}
   end
 
   @doc """

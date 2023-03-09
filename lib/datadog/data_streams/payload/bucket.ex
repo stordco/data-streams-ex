@@ -1,13 +1,13 @@
 defmodule Datadog.DataStreams.Payload.Bucket do
   @moduledoc false
 
-  alias Datadog.DataStreams.Payload
+  alias Datadog.DataStreams.{Aggregator, Payload}
 
   # 10 seconds in nanoseconds
-  @duration 10 * 1_000_000_000
+  @bucket_duration 10 * 1_000 * 1_000 * 1_000
 
   defstruct start: 0,
-            duration: @duration,
+            duration: @bucket_duration,
             stats: [],
             backlogs: []
 
@@ -17,6 +17,18 @@ defmodule Datadog.DataStreams.Payload.Bucket do
           stats: [Payload.Point.t()],
           backlogs: [Payload.Backlog.t()]
         }
+
+  @doc """
+  Creates a new payload bucket from an aggregator bucket.
+  """
+  @spec new(Aggregator.Bucket.t(), Payload.Point.timestamp_type()) :: t()
+  def new(%Aggregator.Bucket{} = bucket, timestamp_type) do
+    %__MODULE__{
+      start: bucket.start,
+      duration: bucket.duration,
+      stats: bucket.points |> Map.values() |> Enum.map(&Payload.Point.new(&1, timestamp_type))
+    }
+  end
 end
 
 defimpl Msgpax.Packer, for: Datadog.DataStreams.Payload.Bucket do

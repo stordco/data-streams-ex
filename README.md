@@ -62,8 +62,8 @@ config :dd_data_streams, :metadata,
 
 We recommend you keep these tags matching all your other instrumentation, like Open Telemetry and `:telemetry`, to ensure Datadog can aggregate data accurately.
 
-### Kafka
+### Integrations
 
-To instrument your data stream services that use Kafka queues, you can use the `Datadog.DataStreams.Integrations.Kafka` module.
+This library contains integration modules to help integrate with various async data pipelines. See one of these modules for usage details.
 
-> **NOTE**: TODO
+- `Datadog.DataStreams.Integrations.Kafka`

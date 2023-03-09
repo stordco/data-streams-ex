@@ -65,10 +65,15 @@ defmodule Datadog.DataStreams.MixProject do
       before_closing_body_tag: &before_closing_body_tag/1,
       extras: ["README.md", "CHANGELOG.md"],
       groups_for_modules: [
+        "Data Stream Integrations": [~r/Datadog.DataStreams.Integrations/],
         "Data Streams": [~r/Datadog.DataStreams/],
         Sketch: [~r/Datadog.Sketch/]
       ],
       main: "readme",
+      nest_modules_by_prefix: [
+        Datadog.DataStreams.Integrations,
+        Datadog
+      ],
       skip_undefined_reference_warnings_on: ["CHANGELOG.md"]
     ]
   end
