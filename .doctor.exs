@@ -1,7 +1,8 @@
 %Doctor.Config{
   ignore_modules: [
     ~r/Enumerable/,
-    ~r/Datadog.Sketch.Protobuf/
+    ~r/Datadog.Sketch.Protobuf/,
+    ~r/Msgpax/
   ],
   ignore_paths: [],
   min_module_doc_coverage: 40,

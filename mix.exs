@@ -21,7 +21,8 @@ defmodule Datadog.DataStreams.MixProject do
   # Run "mix help compile.app" to learn about applications.
   def application do
     [
-      extra_applications: [:logger]
+      extra_applications: [:logger],
+      mod: {Datadog.DataStreams.Application, []}
     ]
   end
 
@@ -37,6 +38,11 @@ defmodule Datadog.DataStreams.MixProject do
       {:dialyxir, "~> 1.1", only: [:dev, :test], runtime: false},
       {:doctor, "~> 0.19.0", only: [:dev, :test], runtime: false},
       {:ex_doc, "~> 0.28", only: [:dev, :test], runtime: false},
+      {:finch, ">= 0.1.0"},
+      {:fnv, "~> 0.3.2"},
+      {:jason, "~> 1.0"},
+      {:msgpax, "~> 2.3.1"},
+      {:opentelemetry_api, ">= 1.0.0"},
       {:protobuf, "~> 0.10.0"}
     ]
   end
@@ -56,11 +62,42 @@ defmodule Datadog.DataStreams.MixProject do
   # Include useful markdown files in built documentation
   defp docs do
     [
+      before_closing_body_tag: &before_closing_body_tag/1,
       extras: ["README.md", "CHANGELOG.md"],
+      groups_for_modules: [
+        "Data Streams": [~r/Datadog.DataStreams/],
+        Sketch: [~r/Datadog.Sketch/]
+      ],
       main: "readme",
       skip_undefined_reference_warnings_on: ["CHANGELOG.md"]
     ]
   end
+
+  defp before_closing_body_tag(:html) do
+    """
+    <script src="https://cdn.jsdelivr.net/npm/mermaid@8.13.3/dist/mermaid.min.js"></script>
+    <script>
+      document.addEventListener("DOMContentLoaded", function () {
+        mermaid.initialize({ startOnLoad: false });
+        let id = 0;
+        for (const codeEl of document.querySelectorAll("pre code.mermaid")) {
+          const preEl = codeEl.parentElement;
+          const graphDefinition = codeEl.textContent;
+          const graphEl = document.createElement("div");
+          const graphId = "mermaid-graph-" + id++;
+          mermaid.render(graphId, graphDefinition, function (svgSource, bindListeners) {
+            graphEl.innerHTML = svgSource;
+            bindListeners && bindListeners(graphEl);
+            preEl.insertAdjacentElement("afterend", graphEl);
+            preEl.remove();
+          });
+        }
+      });
+    </script>
+    """
+  end
+
+  defp before_closing_body_tag(_), do: ""
 
   # Ignore modules that don't require test coverage. Worth noting that
   # we test on Elixir versions < 1.13 which do not include the
@@ -69,7 +106,8 @@ defmodule Datadog.DataStreams.MixProject do
     [
       ignore_modules: [
         ~r/Enumerable/,
-        ~r/Datadog.Sketch.Protobuf/
+        ~r/Datadog.Sketch.Protobuf/,
+        ~r/Msgpax/
       ],
       summary: [
         threshold: 0
