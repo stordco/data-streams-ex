@@ -17,7 +17,7 @@ defmodule Datadog.DataStreams.Config do
 
   ## Examples
 
-      iex> Application.put_env(:opentelemetry, :resource, %{name: "my-elixir-service"})
+      iex> Application.put_env(:opentelemetry, :resource, service: %{name: "my-elixir-service"})
       ...> Config.service()
       "my-elixir-service"
 
@@ -31,14 +31,18 @@ defmodule Datadog.DataStreams.Config do
   """
   @spec service() :: String.t()
   def service() do
-    case :opentelemetry |> Application.get_env(:resource, %{}) |> Enum.to_list() do
-      [{:name, otel_name} | _rest] ->
-        otel_name
+    otel_service_name =
+      :opentelemetry
+      |> Application.get_env(:resource, [])
+      |> Keyword.get(:service, %{})
+      |> Map.get(:name)
 
-      _ ->
-        :dd_data_streams
-        |> Application.get_env(:metadata, [])
-        |> Keyword.get(:service, "unnamed-elixir-service")
+    if is_nil(otel_service_name) do
+      :dd_data_streams
+      |> Application.get_env(:metadata, [])
+      |> Keyword.get(:service, "unnamed-elixir-service")
+    else
+      otel_service_name
     end
   end
 
@@ -54,7 +58,7 @@ defmodule Datadog.DataStreams.Config do
 
   ## Examples
 
-      iex> Application.put_env(:opentelemetry, :resource, %{env: "production"})
+      iex> Application.put_env(:opentelemetry, :resource, service: %{env: "production"})
       ...> Config.env()
       "production"
 
@@ -68,14 +72,18 @@ defmodule Datadog.DataStreams.Config do
   """
   @spec env() :: String.t()
   def env() do
-    case :opentelemetry |> Application.get_env(:resource, %{}) |> Enum.to_list() do
-      [{:env, otel_env} | _rest] ->
-        otel_env
+    otel_service_env =
+      :opentelemetry
+      |> Application.get_env(:resource, [])
+      |> Keyword.get(:service, %{})
+      |> Map.get(:env)
 
-      _ ->
-        :dd_data_streams
-        |> Application.get_env(:metadata, [])
-        |> Keyword.get(:env, "")
+    if is_nil(otel_service_env) do
+      :dd_data_streams
+      |> Application.get_env(:metadata, [])
+      |> Keyword.get(:env, "")
+    else
+      otel_service_env
     end
   end
 
