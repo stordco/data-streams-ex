@@ -42,6 +42,7 @@ defmodule Datadog.DataStreams.Aggregator do
   by the `Datadog.DataStreams.Application` and should not need to be started
   manually.
   """
+  @spec start_link(Keyword.t()) :: GenServer.on_start()
   def start_link(_opts) do
     opts = [enabled?: Config.agent_enabled?()]
     GenServer.start_link(__MODULE__, opts, name: __MODULE__)
@@ -70,6 +71,7 @@ defmodule Datadog.DataStreams.Aggregator do
 
       iex> :ok = Aggregator.flush()
   """
+  @spec flush() :: :ok
   def flush() do
     Process.send(__MODULE__, :send, [])
   end
@@ -92,24 +94,24 @@ defmodule Datadog.DataStreams.Aggregator do
   def handle_cast({:add, %Aggregator.Point{} = point}, state) do
     new_ts_type_current_buckets =
       Aggregator.Bucket.upsert(state.ts_type_current_buckets, point.timestamp, fn bucket ->
-        new_points =
-          Aggregator.Group.upsert(bucket.points, point, fn group ->
+        new_groups =
+          Aggregator.Group.upsert(bucket.groups, point, fn group ->
             Aggregator.Group.add(group, point)
           end)
 
-        %{bucket | points: new_points}
+        %{bucket | groups: new_groups}
       end)
 
     origin_timestamp = point.timestamp - point.pathway_latency
 
     new_ts_type_origin_buckets =
       Aggregator.Bucket.upsert(state.ts_type_origin_buckets, origin_timestamp, fn bucket ->
-        new_points =
-          Aggregator.Group.upsert(bucket.points, point, fn group ->
+        new_groups =
+          Aggregator.Group.upsert(bucket.groups, point, fn group ->
             Aggregator.Group.add(group, point)
           end)
 
-        %{bucket | points: new_points}
+        %{bucket | groups: new_groups}
       end)
 
     {:noreply,

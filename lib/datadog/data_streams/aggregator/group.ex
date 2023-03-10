@@ -54,6 +54,11 @@ defmodule Datadog.DataStreams.Aggregator.Group do
           required(non_neg_integer()) => t()
         }
   def upsert(groups, point, fun) do
-    Map.update(groups, point.hash, new(point), fun)
+    new_group =
+      groups
+      |> Map.get(point.hash, new(point))
+      |> fun.()
+
+    Map.put(groups, point.hash, new_group)
   end
 end
