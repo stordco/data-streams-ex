@@ -128,12 +128,12 @@ defmodule Datadog.DataStreams.Config do
 
   @doc """
   Returns a full path to the Datadog agent, joining the given path string.
-  If this configuration is not set, we default to "localhost:8125".
+  If this configuration is not set, we default to "localhost:8126".
 
   ## Examples
 
       iex> Config.agent_url("/info")
-      "http://localhost:8125/info"
+      "http://localhost:8126/info"
 
       iex> Application.put_env(:dd_data_streams, :agent, [host: "my-agent.local", port: 1234])
       ...> Config.agent_url("/info")
@@ -144,7 +144,7 @@ defmodule Datadog.DataStreams.Config do
   def agent_url(path) do
     config = Application.get_env(:dd_data_streams, :agent, [])
     host = Keyword.get(config, :host, "localhost")
-    port = Keyword.get(config, :port, 8125)
+    port = Keyword.get(config, :port, 8126)
 
     URI.to_string(%URI{
       host: host,

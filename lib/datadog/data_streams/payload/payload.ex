@@ -59,6 +59,9 @@ defmodule Datadog.DataStreams.Payload do
   Adds an aggregator bucket to the payload.
   """
   @spec add_bucket(t(), Aggregator.Bucket.t(), Payload.Point.timestamp_type()) :: t()
+  # Ignore empty buckets
+  def add_bucket(payload, %Aggregator.Bucket{points: %{}}), do: payload
+
   def add_bucket(%__MODULE__{} = payload, %Aggregator.Bucket{} = bucket, timestamp_type) do
     %{payload | stats: payload.stats ++ [Payload.Bucket.new(bucket, timestamp_type)]}
   end

@@ -48,11 +48,8 @@ defmodule Datadog.DataStreams.Propagator do
       %{"#{@propagation_key}" => <<174, 208, 17, 141, 62, 199, 215, 238, 224, 159, 240, 170, 211, 97, 224, 159, 240, 170, 211, 97>>}
 
   """
-  @spec encode_header(list({binary(), binary()}), Pathway.t()) :: list({binary(), binary()})
-  @spec encode_header(%{required(binary()) => binary()}, Pathway.t()) :: %{
-          required(binary()) => binary()
-        }
-  @spec encode_header(any(), Pathway.t()) :: any()
+  @spec encode_header(headers, Pathway.t()) :: headers
+        when headers: list({binary(), binary()}) | %{required(binary()) => binary()} | nil
   def encode_header(headers, pathway) when is_map(headers),
     do: headers |> Enum.to_list() |> encode_header(pathway) |> Map.new()
 
@@ -146,9 +143,8 @@ defmodule Datadog.DataStreams.Propagator do
       nil
 
   """
-  @spec decode_header(list({binary(), binary()})) :: Pathway.t() | nil
-  @spec decode_header(%{required(binary()) => binary()}) :: Pathway.t() | nil
-  @spec decode_header(any()) :: nil
+  @spec decode_header(list({binary(), binary()}) | %{required(binary()) => binary()} | nil) ::
+          Pathway.t() | nil
   def decode_header(headers) when is_map(headers),
     do: headers |> Enum.to_list() |> decode_header()
 

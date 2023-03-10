@@ -32,6 +32,8 @@ defmodule Datadog.DataStreams.Transport do
     case request |> Finch.request(Datadog.Finch) |> handle_response() do
       {:ok, %Finch.Response{status: 202, body: %{"acknowledged" => true}}} -> :ok
       {:ok, %Finch.Response{body: %{"error" => error}}} -> {:error, error}
+      # This is an odd occurrence, but if the status code shows ok, then alright
+      {:ok, %Finch.Response{status: status}} when status in 200..399 -> :ok
       {:error, any} -> {:error, any}
     end
   end
@@ -67,7 +69,7 @@ defmodule Datadog.DataStreams.Transport do
   @spec header?(Mint.Types.headers(), String.t(), String.t()) :: bool()
   defp header?(headers, key, value) do
     Enum.any?(headers, fn {k, v} ->
-      String.downcase(k) == key and String.downcase(v) == value
+      String.downcase(k) == key and String.contains?(String.downcase(v), value)
     end)
   end
 end

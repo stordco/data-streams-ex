@@ -78,6 +78,8 @@ defmodule Datadog.DataStreams.Aggregator do
   def init([{:enabled?, false} | _rest]), do: :ignore
 
   def init(_opts) do
+    Process.flag(:trap_exit, true)
+
     {:ok,
      %{
        send_timer: Process.send_after(self(), :send, @send_interval),
@@ -90,18 +92,24 @@ defmodule Datadog.DataStreams.Aggregator do
   def handle_cast({:add, %Aggregator.Point{} = point}, state) do
     new_ts_type_current_buckets =
       Aggregator.Bucket.upsert(state.ts_type_current_buckets, point.timestamp, fn bucket ->
-        Aggregator.Group.upsert(bucket.points, point, fn group ->
-          Aggregator.Group.add(group, point)
-        end)
+        new_points =
+          Aggregator.Group.upsert(bucket.points, point, fn group ->
+            Aggregator.Group.add(group, point)
+          end)
+
+        %{bucket | points: new_points}
       end)
 
     origin_timestamp = point.timestamp - point.pathway_latency
 
     new_ts_type_origin_buckets =
       Aggregator.Bucket.upsert(state.ts_type_origin_buckets, origin_timestamp, fn bucket ->
-        Aggregator.Group.upsert(bucket.points, point, fn group ->
-          Aggregator.Group.add(group, point)
-        end)
+        new_points =
+          Aggregator.Group.upsert(bucket.points, point, fn group ->
+            Aggregator.Group.add(group, point)
+          end)
+
+        %{bucket | points: new_points}
       end)
 
     {:noreply,
@@ -128,20 +136,22 @@ defmodule Datadog.DataStreams.Aggregator do
         Aggregator.Bucket.current?(v, now)
       end)
 
-    Task.async(fn ->
-      payload =
-        Payload.new()
-        |> Payload.add_buckets(past_ts_type_current_buckets, :current)
-        |> Payload.add_buckets(past_ts_type_origin_buckets, :origin)
+    payload =
+      Payload.new()
+      |> Payload.add_buckets(past_ts_type_current_buckets, :current)
+      |> Payload.add_buckets(past_ts_type_origin_buckets, :origin)
 
-      with {:ok, encoded_payload} <- Payload.encode(payload),
-           :ok <- Transport.send_pipeline_stats(encoded_payload) do
-        {:ok, Payload.stats_count(payload)}
-      else
-        {:error, reason} -> {:error, reason}
-        something -> {:error, something}
-      end
-    end)
+    unless Payload.stats_count(payload) == 0 do
+      Task.async(fn ->
+        with {:ok, encoded_payload} <- Payload.encode(payload),
+             :ok <- Transport.send_pipeline_stats(encoded_payload) do
+          {:ok, Payload.stats_count(payload)}
+        else
+          {:error, reason} -> {:error, reason}
+          something -> {:error, something}
+        end
+      end)
+    end
 
     {:noreply,
      %{
@@ -152,6 +162,7 @@ defmodule Datadog.DataStreams.Aggregator do
      }}
   end
 
+  @doc false
   def handle_info({task_ref, {:ok, count}}, state) when is_reference(task_ref) do
     Logger.debug("Successfully sent metrics to Datadog")
     :telemetry.execute([:datadog, :datastreams, :aggregator, :flushed_payloads], %{count: 1})
@@ -159,10 +170,48 @@ defmodule Datadog.DataStreams.Aggregator do
     {:noreply, state}
   end
 
+  @doc false
   def handle_info({task_ref, {:error, error}}, state) when is_reference(task_ref) do
     Logger.error("Error sending metrics to Datadog", error: error)
     :telemetry.execute([:datadog, :datastreams, :aggregator, :flush_errors], %{count: 1})
     {:noreply, state}
+  end
+
+  @doc false
+  def handle_info(_, state), do: {:noreply, state}
+
+  @doc false
+  def terminate(_reason, %{ts_type_current_buckets: %{}, ts_type_origin_buckets: %{}}) do
+    Logger.debug("Stopping #{__MODULE__} with an empty state")
+  end
+
+  @doc false
+  def terminate(_reason, state) do
+    payload =
+      Payload.new()
+      |> Payload.add_buckets(state.ts_type_current_buckets, :current)
+      |> Payload.add_buckets(state.ts_type_origin_buckets, :origin)
+
+    with {:ok, encoded_payload} <- Payload.encode(payload),
+         :ok <- Transport.send_pipeline_stats(encoded_payload) do
+      Logger.debug("Successfully sent metrics to Datadog before termination")
+      :telemetry.execute([:datadog, :datastreams, :aggregator, :flushed_payloads], %{count: 1})
+
+      :telemetry.execute([:datadog, :datastreams, :aggregator, :flushed_buckets], %{
+        count: Payload.stats_count(payload)
+      })
+    else
+      error ->
+        Logger.error("Error sending metrics to Datadog before termination", error: error)
+        :telemetry.execute([:datadog, :datastreams, :aggregator, :flush_errors], %{count: 1})
+    end
+  rescue
+    error ->
+      Logger.error("Error attempting to sending metrics to Datadog before termination",
+        error: error
+      )
+
+      :telemetry.execute([:datadog, :datastreams, :aggregator, :flush_errors], %{count: 1})
   end
 
   # Splits the `map` into two maps according to the given function `fun`.

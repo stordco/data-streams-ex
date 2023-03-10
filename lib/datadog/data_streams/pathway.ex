@@ -20,7 +20,16 @@ defmodule Datadog.DataStreams.Pathway do
 
   alias Datadog.DataStreams.{Aggregator, Config}
 
-  @hashable_edge_tags ["event_type", "exchange", "group", "topic", "type"]
+  @hashable_edge_tags [
+    "consumer_group",
+    "direction",
+    "event_type",
+    "exchange",
+    "group",
+    "partition",
+    "topic",
+    "type"
+  ]
 
   defstruct hash: 0,
             pathway_start: 0,
@@ -165,7 +174,7 @@ defmodule Datadog.DataStreams.Pathway do
       edge_tags: edge_tags,
       parent_hash: pathway.hash,
       hash: child.hash,
-      timestamp: now,
+      timestamp: pathway.pathway_start,
       pathway_latency: now - pathway.pathway_start,
       edge_latency: now - pathway.edge_start
     })
