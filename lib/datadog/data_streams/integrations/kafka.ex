@@ -47,6 +47,7 @@ defmodule Datadog.DataStreams.Integrations.Kafka do
     message
     |> Map.take([:topic, :partition])
     |> Map.merge(%{type: "kafka", direction: "out"})
+    |> Enum.reject(fn {_k, v} -> is_nil(v) end)
     |> Enum.map(fn {k, v} -> to_string(k) <> ":" <> to_string(v) end)
   end
 
@@ -95,6 +96,7 @@ defmodule Datadog.DataStreams.Integrations.Kafka do
     message
     |> Map.take([:topic, :partition])
     |> Map.merge(%{type: "kafka", direction: "in", consumer_group: consumer_group})
+    |> Enum.reject(fn {_k, v} -> is_nil(v) end)
     |> Enum.map(fn {k, v} -> to_string(k) <> ":" <> to_string(v) end)
   end
 end
