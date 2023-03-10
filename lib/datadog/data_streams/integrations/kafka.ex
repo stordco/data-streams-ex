@@ -6,23 +6,19 @@ defmodule Datadog.DataStreams.Integrations.Kafka do
   alias Datadog.DataStreams.{Context, Pathway, Propagator}
 
   @typedoc """
-  A general map that contains the topic, partition, and headers. This
+  A general map that contains the topic, partition, and headers atoms. This
   matches the format of `Elsa.elsa_message` by default
   (and will work out of the box), though will need the topic and partition
   added if you are using standard `:brod` (or `kpro`).
   """
-  @type message :: %{
-          optional(:topic) => String.t(),
-          optional(:partition) => non_neg_integer(),
-          optional(:headers) => list({binary(), binary()})
-        }
+  @type message :: map()
 
   @doc """
   Traces a Kafka message being produced. Uses the pathway in the
   current `Datadog.DataStreams.Context`. Returns a new message with
   the pathway encoded in the header values.
   """
-  @spec trace_produce(message()) :: message()
+  @spec trace_produce(msg) :: msg when msg: message()
   def trace_produce(message) do
     edge_tags = produce_edge_tags(message)
     new_pathway = Context.set_checkpoint(edge_tags)
@@ -34,7 +30,7 @@ defmodule Datadog.DataStreams.Integrations.Kafka do
   Traces a Kafka message being produced. Returns the new message with the
   pathway encoded in the header values, as well as the new pathway.
   """
-  @spec trace_produce_with_pathway(Pathway.t(), message()) :: {message(), Pathway.t()}
+  @spec trace_produce_with_pathway(Pathway.t(), msg) :: {msg, Pathway.t()} when msg: message()
   def trace_produce_with_pathway(pathway, message) do
     edge_tags = produce_edge_tags(message)
     new_pathway = Pathway.set_checkpoint(pathway, edge_tags)
