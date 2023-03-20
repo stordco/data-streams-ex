@@ -1,6 +1,8 @@
 defmodule Datadog.DataStreams.Aggregator.Point do
   @moduledoc false
 
+  alias Datadog.DataStreams.Tags
+
   defstruct edge_tags: [],
             hash: 0,
             parent_hash: 0,
@@ -14,7 +16,7 @@ defmodule Datadog.DataStreams.Aggregator.Point do
   latency data.
   """
   @type t :: %__MODULE__{
-          edge_tags: [String.t()],
+          edge_tags: Tags.t(),
           hash: non_neg_integer(),
           parent_hash: non_neg_integer(),
           pathway_latency: non_neg_integer(),
