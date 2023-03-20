@@ -18,18 +18,7 @@ defmodule Datadog.DataStreams.Pathway do
   [DSG]: https://github.com/DataDog/data-streams-go/blob/main/datastreams/pathway.go
   """
 
-  alias Datadog.DataStreams.{Aggregator, Config}
-
-  @hashable_edge_tags [
-    "consumer_group",
-    "direction",
-    "event_type",
-    "exchange",
-    "group",
-    "partition",
-    "topic",
-    "type"
-  ]
+  alias Datadog.DataStreams.{Aggregator, Config, Tags}
 
   defstruct hash: 0,
             pathway_start: 0,
@@ -59,24 +48,19 @@ defmodule Datadog.DataStreams.Pathway do
       2071821778175304604
 
       iex> # Invalid edge tag
-      ...> Pathway.node_hash("service-1", "env", "d:1", ["edge-1"])
+      ...> Pathway.node_hash("service-1", "env", "d:1", [{"edge", "1"}])
       2071821778175304604
 
-      iex> Pathway.node_hash("service-1", "env", "d:1", ["type:kafka"])
+      iex> Pathway.node_hash("service-1", "env", "d:1", [{"type", "kafka"}])
       9272613839978655432
 
   """
-  @spec node_hash(String.t(), String.t(), String.t(), list(String.t())) :: non_neg_integer()
-  def node_hash(service, env, primary_tag, edge_tags \\ []) do
+  @spec node_hash(String.t(), String.t(), String.t(), Tags.t()) :: non_neg_integer()
+  def node_hash(service, env, primary_tag, tags \\ []) do
     edge_tags =
-      edge_tags
-      |> Enum.filter(fn tag ->
-        case String.split(tag, ":") do
-          [key, _value] when key in @hashable_edge_tags -> true
-          _ -> false
-        end
-      end)
-      |> Enum.sort()
+      tags
+      |> Tags.filter(:edge)
+      |> Tags.encode()
 
     ([service, env, primary_tag] ++ edge_tags)
     |> Enum.join("")
@@ -120,18 +104,18 @@ defmodule Datadog.DataStreams.Pathway do
   @doc """
   Creates a new pathway struct.
   """
-  @spec new_pathway(list(String.t())) :: t()
-  def new_pathway(edge_tags) do
+  @spec new_pathway(Tags.input()) :: t()
+  def new_pathway(tags) do
     :nanosecond
     |> :erlang.system_time()
-    |> new_pathway(edge_tags)
+    |> new_pathway(tags)
   end
 
   @doc """
   Creates a new pathway at a given time in unix epoch nanoseconds.
   """
-  @spec new_pathway(non_neg_integer(), list(String.t())) :: t()
-  def new_pathway(now, edge_tags) do
+  @spec new_pathway(non_neg_integer(), Tags.input()) :: t()
+  def new_pathway(now, tags) do
     set_checkpoint(
       %__MODULE__{
         hash: 0,
@@ -139,29 +123,31 @@ defmodule Datadog.DataStreams.Pathway do
         edge_start: now
       },
       now,
-      edge_tags
+      tags
     )
   end
 
   @doc """
   Sets a checkpoint on the pathway.
   """
-  @spec set_checkpoint(t(), list(String.t())) :: t()
-  def set_checkpoint(pathway, edge_tags) do
-    set_checkpoint(pathway, :erlang.system_time(:nanosecond), edge_tags)
+  @spec set_checkpoint(t(), Tags.input()) :: t()
+  def set_checkpoint(pathway, tags) do
+    set_checkpoint(pathway, :erlang.system_time(:nanosecond), tags)
   end
 
   @doc """
   Sets a checkpoint on the pathway at the given time in unix epoch nanoseconds.
   """
-  @spec set_checkpoint(t(), non_neg_integer(), list(String.t())) :: t()
-  def set_checkpoint(pathway, now, edge_tags) do
+  @spec set_checkpoint(t(), non_neg_integer(), Tags.input()) :: t()
+  def set_checkpoint(pathway, now, tags) do
+    tags = Tags.parse(tags)
+
     node_hash =
       node_hash(
         Config.service(),
         Config.env(),
         Config.primary_tag(),
-        edge_tags
+        tags
       )
 
     child = %__MODULE__{
@@ -171,7 +157,7 @@ defmodule Datadog.DataStreams.Pathway do
     }
 
     Aggregator.add(%Aggregator.Point{
-      edge_tags: edge_tags,
+      edge_tags: tags,
       parent_hash: pathway.hash,
       hash: child.hash,
       timestamp: pathway.pathway_start,

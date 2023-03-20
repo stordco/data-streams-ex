@@ -2,7 +2,7 @@ defmodule Datadog.DataStreams.Aggregator.Group do
   @moduledoc false
 
   alias Datadog.Sketch
-  alias Datadog.DataStreams.Aggregator
+  alias Datadog.DataStreams.{Aggregator, Tags}
 
   defstruct edge_tags: [],
             hash: 0,
@@ -11,7 +11,7 @@ defmodule Datadog.DataStreams.Aggregator.Group do
             edge_latency: Sketch.new_default()
 
   @type t :: %__MODULE__{
-          edge_tags: [String.t()],
+          edge_tags: Tags.t(),
           hash: non_neg_integer(),
           parent_hash: non_neg_integer(),
           pathway_latency: map(),

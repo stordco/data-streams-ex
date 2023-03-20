@@ -18,7 +18,7 @@ defmodule Datadog.DataStreams.Context do
   @context_key "dd-datastreams"
   @hash "pathway.hash"
 
-  alias Datadog.DataStreams.Pathway
+  alias Datadog.DataStreams.{Pathway, Tags}
 
   @doc """
   Returns the current existing Pathway from OpenTelemetry. If
@@ -61,17 +61,17 @@ defmodule Datadog.DataStreams.Context do
   not exist, a new Pathway is created from the edge tags and
   returned.
   """
-  @spec set(list(String.t())) :: Pathway.t()
-  def set_checkpoint(edge_tags) do
+  @spec set(Tags.input()) :: Pathway.t()
+  def set_checkpoint(tags) do
     case get() do
       nil ->
-        edge_tags
+        tags
         |> Pathway.new_pathway()
         |> set()
 
       pathway ->
         pathway
-        |> Pathway.set_checkpoint(edge_tags)
+        |> Pathway.set_checkpoint(tags)
         |> set()
     end
   end

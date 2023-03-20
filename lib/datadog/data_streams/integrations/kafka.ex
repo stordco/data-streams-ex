@@ -3,7 +3,7 @@ defmodule Datadog.DataStreams.Integrations.Kafka do
   Functions for integrating Kafka tracing with DataStreams.
   """
 
-  alias Datadog.DataStreams.{Context, Pathway, Propagator}
+  alias Datadog.DataStreams.{Context, Pathway, Propagator, Tags}
 
   @typedoc """
   A general map that contains the topic, partition, and headers atoms. This
@@ -38,13 +38,11 @@ defmodule Datadog.DataStreams.Integrations.Kafka do
     {%{message | headers: new_headers}, new_pathway}
   end
 
-  @spec produce_edge_tags(message()) :: list(String.t())
+  @spec produce_edge_tags(message()) :: Tags.input()
   defp produce_edge_tags(message) do
     message
     |> Map.take([:topic, :partition])
     |> Map.merge(%{type: "kafka", direction: "out"})
-    |> Enum.reject(fn {_k, v} -> is_nil(v) end)
-    |> Enum.map(fn {k, v} -> to_string(k) <> ":" <> to_string(v) end)
   end
 
   @doc """
@@ -87,12 +85,10 @@ defmodule Datadog.DataStreams.Integrations.Kafka do
     end
   end
 
-  @spec consume_edge_tags(message(), String.t()) :: list(String.t())
+  @spec consume_edge_tags(message(), String.t()) :: Tags.input()
   defp consume_edge_tags(message, consumer_group) do
     message
     |> Map.take([:topic, :partition])
-    |> Map.merge(%{type: "kafka", direction: "in", consumer_group: consumer_group})
-    |> Enum.reject(fn {_k, v} -> is_nil(v) end)
-    |> Enum.map(fn {k, v} -> to_string(k) <> ":" <> to_string(v) end)
+    |> Map.merge(%{type: "kafka", direction: "in", group: consumer_group})
   end
 end

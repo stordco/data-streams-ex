@@ -3,7 +3,7 @@ defmodule Datadog.DataStreams.Payload.Point do
 
   alias Datadog.Sketch
 
-  alias Datadog.DataStreams.Aggregator
+  alias Datadog.DataStreams.{Aggregator, Tags}
 
   defstruct edge_tags: [],
             hash: 0,
@@ -15,7 +15,7 @@ defmodule Datadog.DataStreams.Payload.Point do
   @type timestamp_type :: :current | :origin
 
   @type t :: %__MODULE__{
-          edge_tags: [String.t()],
+          edge_tags: Tags.encoded(),
           hash: non_neg_integer(),
           parent_hash: non_neg_integer(),
           pathway_latency: Sketch.t(),
@@ -29,7 +29,7 @@ defmodule Datadog.DataStreams.Payload.Point do
   @spec new(Aggregator.Group.t(), timestamp_type()) :: t()
   def new(%Aggregator.Group{} = group, timestamp_type) do
     %__MODULE__{
-      edge_tags: group.edge_tags,
+      edge_tags: group.edge_tags |> Tags.filter(:edge) |> Tags.encode(),
       hash: group.hash,
       parent_hash: group.parent_hash,
       pathway_latency: group.pathway_latency,
