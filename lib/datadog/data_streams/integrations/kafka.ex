@@ -60,7 +60,8 @@ defmodule Datadog.DataStreams.Integrations.Kafka do
   Traces a Kafka message being produced. Returns the new message with the
   pathway encoded in the header values, as well as the new pathway.
   """
-  @spec trace_produce_with_pathway(Pathway.t() | nil, msg) :: {msg, Pathway.t()} when msg: message()
+  @spec trace_produce_with_pathway(Pathway.t() | nil, msg) :: {msg, Pathway.t()}
+        when msg: message()
   def trace_produce_with_pathway(pathway, message) do
     edge_tags = produce_edge_tags(message)
     new_pathway = Pathway.set_checkpoint(pathway, edge_tags)
