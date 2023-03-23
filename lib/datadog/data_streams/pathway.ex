@@ -130,7 +130,11 @@ defmodule Datadog.DataStreams.Pathway do
   @doc """
   Sets a checkpoint on the pathway.
   """
-  @spec set_checkpoint(t(), Tags.input()) :: t()
+  @spec set_checkpoint(t() | nil, Tags.input()) :: t()
+  def set_checkpoint(nil, tags) do
+    new_pathway(tags)
+  end
+
   def set_checkpoint(pathway, tags) do
     set_checkpoint(pathway, :erlang.system_time(:nanosecond), tags)
   end
@@ -138,7 +142,11 @@ defmodule Datadog.DataStreams.Pathway do
   @doc """
   Sets a checkpoint on the pathway at the given time in unix epoch nanoseconds.
   """
-  @spec set_checkpoint(t(), non_neg_integer(), Tags.input()) :: t()
+  @spec set_checkpoint(t() | nil, non_neg_integer(), Tags.input()) :: t()
+  def set_checkpoint(nil, now, tags) do
+    new_pathway(now, tags)
+  end
+
   def set_checkpoint(pathway, now, tags) do
     tags = Tags.parse(tags)
 
