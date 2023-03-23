@@ -21,14 +21,17 @@ defmodule Datadog.DataStreams.Integrations.Kafka do
       @doc "Handles a message from Kafka. Receives a message map with partition, topic, and headers."
       @spec handle_message(map()) :: :ok
       def handle_message(message) do
+        # NOTE: This does not add the recommended Kafka span attributes.
         Tracer.with_span "\#{message.topic} process" do
           DataStreamsKafka.trace_consume(message, "my_consumer_group")
 
           # Do work
 
-          new_message
-          |> DataStreamsKafka.trace_produce()
-          |> send_to_kafka()
+          Tracer.with_span "\#{new_message.topic} produce" do
+            new_message
+            |> DataStreamsKafka.trace_produce()
+            |> send_to_kafka()
+          end
         end
       end
 
