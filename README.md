@@ -26,7 +26,7 @@ Just add [`dd_data_streams`](https://hexdocs.pm/dd_data_streams) to your `mix.ex
 ```elixir
 def deps do
   [
-    {:dd_data_streams, "~> 0.1.0"}
+    {:dd_data_streams, "~> 1.0.0"}
   ]
 end
 ```
