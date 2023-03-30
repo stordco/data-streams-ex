@@ -34,6 +34,7 @@ defmodule Datadog.DataStreams.Transport do
       {:ok, %Finch.Response{body: %{"error" => error}}} -> {:error, error}
       # This is an odd occurrence, but if the status code shows ok, then alright
       {:ok, %Finch.Response{status: status}} when status in 200..399 -> :ok
+      {:ok, %Finch.Response{status: status}} -> {:error, "Returned #{status} HTTP status"}
       {:error, any} -> {:error, any}
     end
   end
