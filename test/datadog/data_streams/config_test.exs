@@ -7,8 +7,8 @@ defmodule Datadog.DataStreams.ConfigTest do
 
   setup do
     Application.delete_env(:opentelemetry, :resource)
-    Application.delete_env(:dd_data_streams, :agent)
-    Application.delete_env(:dd_data_streams, :metadata)
+    Application.delete_env(:data_streams, :agent)
+    Application.delete_env(:data_streams, :metadata)
     :ok
   end
 end

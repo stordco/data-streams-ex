@@ -9,7 +9,7 @@ defmodule Datadog.DataStreams.Config do
 
   First, it will try accessing the configured service for `:open_telemetry`.
   If that is not set, it tries to use the service configured for
-  `:dd_data_streams`. If that is not set, it falls back to
+  `:data_streams`. If that is not set, it falls back to
   "unnamed-elixir-service".
 
   Note, this will not pull open telemetry attributes set via environment
@@ -21,7 +21,7 @@ defmodule Datadog.DataStreams.Config do
       ...> Config.service()
       "my-elixir-service"
 
-      iex> Application.put_env(:dd_data_streams, :metadata, service: "my-data-streams-service")
+      iex> Application.put_env(:data_streams, :metadata, service: "my-data-streams-service")
       ...> Config.service()
       "my-data-streams-service"
 
@@ -38,7 +38,7 @@ defmodule Datadog.DataStreams.Config do
       |> Map.get(:name)
 
     if is_nil(otel_service_name) do
-      :dd_data_streams
+      :data_streams
       |> Application.get_env(:metadata, [])
       |> Keyword.get(:service, "unnamed-elixir-service")
     else
@@ -51,7 +51,7 @@ defmodule Datadog.DataStreams.Config do
 
   First, it will try accessing the configured service for `:open_telemetry`.
   If that is not set, it tries to use the service configured for
-  `:dd_data_streams`. If that is not set, it falls back to an empty string.
+  `:data_streams`. If that is not set, it falls back to an empty string.
 
   Note, this will not pull open telemetry attributes set via environment
   variables.
@@ -62,7 +62,7 @@ defmodule Datadog.DataStreams.Config do
       ...> Config.env()
       "production"
 
-      iex> Application.put_env(:dd_data_streams, :metadata, env: "staging")
+      iex> Application.put_env(:data_streams, :metadata, env: "staging")
       ...> Config.env()
       "staging"
 
@@ -79,7 +79,7 @@ defmodule Datadog.DataStreams.Config do
       |> Map.get(:env)
 
     if is_nil(otel_service_env) do
-      :dd_data_streams
+      :data_streams
       |> Application.get_env(:metadata, [])
       |> Keyword.get(:env, "")
     else
@@ -97,7 +97,7 @@ defmodule Datadog.DataStreams.Config do
 
   ## Examples
 
-      iex> Application.put_env(:dd_data_streams, :metadata, primary_tag: "datacenter:d1")
+      iex> Application.put_env(:data_streams, :metadata, primary_tag: "datacenter:d1")
       ...> Config.primary_tag()
       "datacenter:d1"
 
@@ -107,7 +107,7 @@ defmodule Datadog.DataStreams.Config do
   """
   @spec primary_tag() :: String.t()
   def primary_tag() do
-    :dd_data_streams
+    :data_streams
     |> Application.get_env(:metadata, [])
     |> Keyword.get(:primary_tag, "")
   end
@@ -122,14 +122,14 @@ defmodule Datadog.DataStreams.Config do
       iex> Config.agent_enabled?
       false
 
-      iex> Application.put_env(:dd_data_streams, :agent, enabled?: true)
+      iex> Application.put_env(:data_streams, :agent, enabled?: true)
       ...> Config.agent_enabled?
       true
 
   """
   @spec agent_enabled? :: bool()
   def agent_enabled? do
-    :dd_data_streams
+    :data_streams
     |> Application.get_env(:agent, [])
     |> Keyword.get(:enabled?, false)
   end
@@ -143,14 +143,14 @@ defmodule Datadog.DataStreams.Config do
       iex> Config.agent_url("/info")
       "http://localhost:8126/info"
 
-      iex> Application.put_env(:dd_data_streams, :agent, [host: "my-agent.local", port: 1234])
+      iex> Application.put_env(:data_streams, :agent, [host: "my-agent.local", port: 1234])
       ...> Config.agent_url("/info")
       "http://my-agent.local:1234/info"
 
   """
   @spec agent_url(String.t()) :: String.t()
   def agent_url(path) do
-    config = Application.get_env(:dd_data_streams, :agent, [])
+    config = Application.get_env(:data_streams, :agent, [])
     host = Keyword.get(config, :host, "localhost")
     port = Keyword.get(config, :port, 8126)
 

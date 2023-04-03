@@ -5,7 +5,7 @@ defmodule Datadog.DataStreams.AggregatorTest do
   alias Datadog.DataStreams.Aggregator
 
   setup do
-    Application.delete_env(:dd_data_streams, :agent)
+    Application.delete_env(:data_streams, :agent)
     {:ok, state: %{send_timer: nil, ts_type_current_buckets: %{}, ts_type_origin_buckets: %{}}}
   end
 
@@ -17,7 +17,7 @@ defmodule Datadog.DataStreams.AggregatorTest do
 
     @tag :capture_log
     test "sends AggregatorPoint to module when registered" do
-      Application.put_env(:dd_data_streams, :agent, enabled?: true)
+      Application.put_env(:data_streams, :agent, enabled?: true)
       start_supervised!(Aggregator)
       assert :ok = Aggregator.add(%Aggregator.Point{})
     end
