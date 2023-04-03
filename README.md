@@ -20,19 +20,19 @@ To do so, we propagate timestamps, and a hash of the path that messages took wit
 
 ## Installation
 
-Just add [`dd_data_streams`](https://hexdocs.pm/dd_data_streams) to your `mix.exs` file like so:
+Just add [`data_streams`](https://hexdocs.pm/data_streams) to your `mix.exs` file like so:
 
 <!-- {x-release-please-start-version} -->
 ```elixir
 def deps do
   [
-    {:dd_data_streams, "~> 0.1.0"}
+    {:data_streams, "~> 0.1.0"}
   ]
 end
 ```
 <!-- {x-release-please-end} -->
 
-Documentation is automatically generated and published to [HexDocs](https://hexdocs.pm/dd_data_streams).
+Documentation is automatically generated and published to [HexDocs](https://hexdocs.pm/data_streams).
 
 ## Elixir instrumentation
 
@@ -43,7 +43,7 @@ Documentation is automatically generated and published to [HexDocs](https://hexd
 You will need to configure the pipeline with the trace agent URL and enable it to start on application start. This can be done via your `config/` files:
 
 ```elixir
-config :dd_data_streams, :pipeline,
+config :data_streams, :pipeline,
   enabled?: true,
   host: "localhost",
   port: 8126
@@ -54,7 +54,7 @@ The host and port should point to your Datadog agent.
 The instrumentation relies on creating checkpoints at various points in your data stream services with specific tags, recording the pathway that messages take along the way. For a complete picture of your services, you will also need to configure some metadata about the current service running. You can do this in your `config/` files as well:
 
 ```elixir
-config :dd_data_streams, :metadata,
+config :data_streams, :metadata,
   service: "my-service",
   env: "production",
   primary_tag: "datacenter:d1" # You can leave this blank if you don't have a primary tag.

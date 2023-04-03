@@ -16,11 +16,11 @@ defmodule Datadog.DataStreams do
         env: "production"
 
   If you are not using OpenTelemetry, you can set the service, environment,
-  and primary tag via the `:dd_data_streams` application like so:
+  and primary tag via the `:data_streams` application like so:
 
       import Config
 
-      config :dd_data_streams, :metadata,
+      config :data_streams, :metadata,
         service: "my-elixir-service",
         env: "production",
         primary_tag: "datacenter:d1"
@@ -30,7 +30,7 @@ defmodule Datadog.DataStreams do
 
       import Config
 
-      config :dd_data_streams, :agent,
+      config :data_streams, :agent,
         enabled?: true,
         host: "my-datadog-agent.local",
         port: 8125

@@ -3,7 +3,7 @@ defmodule Datadog.DataStreams.MixProject do
 
   def project do
     [
-      app: :dd_data_streams,
+      app: :data_streams,
       name: "Data Streams Ex",
       description: "DataDog data streams library for Elixir",
       version: "0.1.0",
