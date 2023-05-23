@@ -1,5 +1,12 @@
 # Changelog
 
+## [1.1.0](https://github.com/stordco/data-streams-ex/compare/v1.0.0...v1.1.0) (2023-05-23)
+
+
+### Features
+
+* add container id to transport headers ([#12](https://github.com/stordco/data-streams-ex/issues/12)) ([4d58826](https://github.com/stordco/data-streams-ex/commit/4d588260c559babbbd8635ca9b8d8261d4541d61))
+
 ## 1.0.0 (2023-04-06)
 
 
