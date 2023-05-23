@@ -4,7 +4,7 @@ defmodule Datadog.DataStreams.Transport do
   library for requests.
   """
 
-  alias Datadog.DataStreams.Config
+  alias Datadog.DataStreams.{Config, Container}
 
   @headers [
     {"Content-Type", "application/msgpack"},
@@ -27,7 +27,12 @@ defmodule Datadog.DataStreams.Transport do
   @spec send_pipeline_stats(binary) :: :ok | {:error, any()}
   def send_pipeline_stats(stats) do
     request =
-      Finch.build(:post, Config.agent_url("/v0.1/pipeline_stats"), @headers, :zlib.gzip(stats))
+      Finch.build(
+        :post,
+        Config.agent_url("/v0.1/pipeline_stats"),
+        request_headers(),
+        :zlib.gzip(stats)
+      )
 
     case request |> Finch.request(Datadog.Finch) |> handle_response() do
       {:ok, %Finch.Response{status: 202, body: %{"acknowledged" => true}}} -> :ok
@@ -36,6 +41,13 @@ defmodule Datadog.DataStreams.Transport do
       {:ok, %Finch.Response{status: status}} when status in 200..399 -> :ok
       {:ok, %Finch.Response{} = resp} -> {:error, resp}
       {:error, any} -> {:error, any}
+    end
+  end
+
+  defp request_headers() do
+    case Container.get() do
+      nil -> @headers
+      container_id -> [{"Datadog-Container-ID", container_id}] ++ @headers
     end
   end
 

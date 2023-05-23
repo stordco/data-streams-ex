@@ -8,6 +8,7 @@ defmodule Datadog.DataStreams.Application do
   def start(_type, _args) do
     children = [
       {Finch, name: Datadog.Finch},
+      Datadog.DataStreams.Container,
       Datadog.DataStreams.Aggregator
     ]
 
