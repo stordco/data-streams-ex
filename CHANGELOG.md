@@ -1,5 +1,12 @@
 # Changelog
 
+## [1.1.2](https://github.com/stordco/data-streams-ex/compare/v1.1.1...v1.1.2) (2023-06-05)
+
+
+### Bug Fixes
+
+* defensive code around container logic ([#16](https://github.com/stordco/data-streams-ex/issues/16)) ([97d770b](https://github.com/stordco/data-streams-ex/commit/97d770b0db652f6a202bdafb812321ea55799592))
+
 ## [1.1.1](https://github.com/stordco/data-streams-ex/compare/v1.1.0...v1.1.1) (2023-06-05)
 
 
