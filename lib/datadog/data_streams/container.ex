@@ -49,7 +49,7 @@ defmodule Datadog.DataStreams.Container do
     file
     |> File.stream!()
     |> parse_container_id()
-  catch
+  rescue
     _ -> nil
   end
 
@@ -61,7 +61,7 @@ defmodule Datadog.DataStreams.Container do
     |> Stream.map(&parse_line/1)
     |> Stream.filter(fn value -> not is_nil(value) end)
     |> Enum.at(0)
-  catch
+  rescue
     _ -> nil
   end
 

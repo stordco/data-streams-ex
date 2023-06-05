@@ -162,4 +162,8 @@ defmodule Datadog.DataStreams.ContainerTest do
 
     assert ^cid = Container.read_container_id(file_path)
   end
+
+  test "read_container_id/1 does not fail when file does not exist" do
+    refute Container.read_container_id("/does/not/exist/ohpleasedontbreakmytests")
+  end
 end
