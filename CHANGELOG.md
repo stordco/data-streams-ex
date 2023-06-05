@@ -1,5 +1,12 @@
 # Changelog
 
+## [1.1.1](https://github.com/stordco/data-streams-ex/compare/v1.1.0...v1.1.1) (2023-06-05)
+
+
+### Bug Fixes
+
+* set span attribute to pathway hash ([#14](https://github.com/stordco/data-streams-ex/issues/14)) ([94ca3fd](https://github.com/stordco/data-streams-ex/commit/94ca3fd02f7afa4434664463bc8b257020f48243))
+
 ## [1.1.0](https://github.com/stordco/data-streams-ex/compare/v1.0.0...v1.1.0) (2023-05-23)
 
 
