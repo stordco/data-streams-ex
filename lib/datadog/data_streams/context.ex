@@ -16,7 +16,6 @@ defmodule Datadog.DataStreams.Context do
   """
 
   @context_key "dd-datastreams"
-  @hash "pathway.hash"
 
   alias Datadog.DataStreams.{Pathway, Tags}
 
@@ -36,7 +35,6 @@ defmodule Datadog.DataStreams.Context do
   @spec set(Pathway.t()) :: Pathway.t()
   def set(%Pathway{} = pathway) do
     OpenTelemetry.Ctx.set_value(@context_key, pathway)
-    OpenTelemetry.Ctx.set_value(@hash, pathway.hash)
     pathway
   end
 
