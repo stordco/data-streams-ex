@@ -37,7 +37,11 @@ defmodule Datadog.DataStreams.Integrations.Kafka do
 
   """
 
+  require OpenTelemetry.Tracer, as: Tracer
+
   alias Datadog.DataStreams.{Context, Pathway, Propagator, Tags}
+
+  @otel_attribute "pathway.hash"
 
   @typedoc """
   A general map that contains the topic, partition, and headers atoms. This
@@ -66,10 +70,15 @@ defmodule Datadog.DataStreams.Integrations.Kafka do
   @spec trace_produce_with_pathway(Pathway.t() | nil, msg) :: {msg, Pathway.t()}
         when msg: message()
   def trace_produce_with_pathway(pathway, message) do
-    edge_tags = produce_edge_tags(message)
-    new_pathway = Pathway.set_checkpoint(pathway, edge_tags)
-    new_headers = Propagator.encode_header(message.headers, new_pathway)
-    {%{message | headers: new_headers}, new_pathway}
+    Tracer.with_span "dsm.trace_kafka_produce" do
+      edge_tags = produce_edge_tags(message)
+      new_pathway = Pathway.set_checkpoint(pathway, edge_tags)
+
+      Tracer.set_attribute(@otel_attribute, to_string(new_pathway.hash))
+
+      new_headers = Propagator.encode_header(message.headers, new_pathway)
+      {%{message | headers: new_headers}, new_pathway}
+    end
   end
 
   @spec produce_edge_tags(message()) :: Tags.input()
@@ -98,14 +107,20 @@ defmodule Datadog.DataStreams.Integrations.Kafka do
   """
   @spec trace_consume_with_pathway(Pathway.t() | nil, message(), String.t()) :: Pathway.t()
   def trace_consume_with_pathway(pathway, message, consumer_group) do
-    edge_tags = consume_edge_tags(message, consumer_group)
+    Tracer.with_span "dsm.trace_kafka_consume" do
+      edge_tags = consume_edge_tags(message, consumer_group)
 
-    case Propagator.decode_header(message.headers) do
-      nil ->
-        Pathway.set_checkpoint(pathway, edge_tags)
+      new_pathway =
+        case Propagator.decode_header(message.headers) do
+          nil ->
+            Pathway.set_checkpoint(pathway, edge_tags)
 
-      decoded_pathway ->
-        Pathway.set_checkpoint(decoded_pathway, edge_tags)
+          decoded_pathway ->
+            Pathway.set_checkpoint(decoded_pathway, edge_tags)
+        end
+
+      Tracer.set_attribute(@otel_attribute, to_string(new_pathway.hash))
+      new_pathway
     end
   end
 
