@@ -16,8 +16,7 @@ defmodule Datadog.DataStreams.Aggregator.Offset do
         }
 
   @doc """
-  Creates a new offset map with the given offset and what ever options
-  given.
+  Creates a new offset map with the given offset and options
   """
   @spec new(type(), integer(), non_neg_integer(), Keyword.t()) :: t()
   def new(type, offset, timestamp, opts \\ []) do
