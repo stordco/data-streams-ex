@@ -10,16 +10,28 @@ defmodule Datadog.DataStreams.AggregatorTest do
   end
 
   describe "add/1" do
-    test "sends AggregatorPoint to module when not started" do
+    test "sends Aggregator.Point to module when not started" do
       refute Process.whereis(Aggregator)
       assert :ok = Aggregator.add(%Aggregator.Point{})
     end
 
     @tag :capture_log
-    test "sends AggregatorPoint to module when registered" do
+    test "sends Aggregator.Point to module when registered" do
       Application.put_env(:data_streams, :agent, enabled?: true)
       start_supervised!(Aggregator)
       assert :ok = Aggregator.add(%Aggregator.Point{})
+    end
+
+    test "sends Aggregator.Offset to module when not started" do
+      refute Process.whereis(Aggregator)
+      assert :ok = Aggregator.add(%Aggregator.Offset{})
+    end
+
+    @tag :capture_log
+    test "sends Aggregator.Offset to module when registered" do
+      Application.put_env(:data_streams, :agent, enabled?: true)
+      start_supervised!(Aggregator)
+      assert :ok = Aggregator.add(%Aggregator.Offset{})
     end
   end
 
@@ -52,9 +64,9 @@ defmodule Datadog.DataStreams.AggregatorTest do
                )
 
       assert %{
-               1_678_471_420_000_000_000 => %Datadog.DataStreams.Aggregator.Bucket{
+               1_678_471_420_000_000_000 => %Aggregator.Bucket{
                  groups: %{
-                   9_808_874_869_469_701_221 => %Datadog.DataStreams.Aggregator.Group{
+                   9_808_874_869_469_701_221 => %Aggregator.Group{
                      edge_tags: ["type:test"],
                      hash: 9_808_874_869_469_701_221,
                      parent_hash: 17_210_443_572_488_294_574,
@@ -62,17 +74,17 @@ defmodule Datadog.DataStreams.AggregatorTest do
                      edge_latency: _
                    }
                  },
-                 latest_commit_offsets: %{},
-                 latest_produce_offsets: %{},
+                 latest_commit_offsets: [],
+                 latest_produce_offsets: [],
                  start: 1_678_471_420_000_000_000,
                  duration: 10_000_000_000
                }
              } = new_state.ts_type_current_buckets
 
       assert %{
-               1_678_471_410_000_000_000 => %Datadog.DataStreams.Aggregator.Bucket{
+               1_678_471_410_000_000_000 => %Aggregator.Bucket{
                  groups: %{
-                   9_808_874_869_469_701_221 => %Datadog.DataStreams.Aggregator.Group{
+                   9_808_874_869_469_701_221 => %Aggregator.Group{
                      edge_tags: ["type:test"],
                      hash: 9_808_874_869_469_701_221,
                      parent_hash: 17_210_443_572_488_294_574,
@@ -80,12 +92,41 @@ defmodule Datadog.DataStreams.AggregatorTest do
                      edge_latency: _
                    }
                  },
-                 latest_commit_offsets: %{},
-                 latest_produce_offsets: %{},
+                 latest_commit_offsets: [],
+                 latest_produce_offsets: [],
                  start: 1_678_471_410_000_000_000,
                  duration: 10_000_000_000
                }
              } = new_state.ts_type_origin_buckets
+    end
+
+    test "adds aggregator offset to bucket", %{state: state} do
+      offset = %Aggregator.Offset{
+        offset: 13,
+        timestamp: 1_687_986_447_538_450_340,
+        type: :commit,
+        tags: %{
+          "consumer_group" => "test-group",
+          "partition" => 0,
+          "topic" => "test-topic",
+          "type" => "kafka_commit"
+        }
+      }
+
+      assert {:noreply, new_state} = Aggregator.handle_cast({:add, offset}, state)
+
+      assert %{
+               1_687_986_440_000_000_000 => %Aggregator.Bucket{
+                 groups: %{},
+                 latest_commit_offsets: [^offset],
+                 latest_produce_offsets: [],
+                 start: 1_687_986_440_000_000_000,
+                 duration: 10_000_000_000
+               }
+             } = new_state.ts_type_current_buckets
+
+      # It should find and update the existing data, not add to the bucket.
+      assert {:noreply, ^new_state} = Aggregator.handle_cast({:add, offset}, new_state)
     end
   end
 
