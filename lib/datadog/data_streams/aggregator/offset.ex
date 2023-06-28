@@ -30,7 +30,7 @@ defmodule Datadog.DataStreams.Aggregator.Offset do
 
   @doc """
   Updates an existing `#{__MODULE__}` where all properties except the
-  `offset` match. If no matching one is found, we create a new one.
+  `offset` match. If no match is found, we create a new one.
   """
   @spec upsert([t()], t()) :: [t()]
   def upsert(offsets, %{tags: upsert_tags} = upsert_offset) do
