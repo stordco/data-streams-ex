@@ -11,6 +11,10 @@ defmodule Datadog.DataStreams.Payload.Backlog do
           value: non_neg_integer()
         }
 
+  @doc """
+  Creates a new backlog struct from an aggregator offset.
+  """
+  @spec new(Aggregator.Offset.t()) :: t()
   def new(%Aggregator.Offset{offset: offset, tags: tags}) do
     %__MODULE__{
       tags: tags |> Tags.parse() |> Tags.encode(),
