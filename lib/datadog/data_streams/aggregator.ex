@@ -57,11 +57,17 @@ defmodule Datadog.DataStreams.Aggregator do
 
       iex> :ok = Aggregator.add(%Aggregator.Point{})
 
+      iex> :ok = Aggregator.add(%Aggregator.Offset{})
+
   """
-  @spec add(Aggregator.Point.t()) :: :ok
+  @spec add(Aggregator.Point.t() | Aggregator.Offset.t()) :: :ok
   def add(%Aggregator.Point{} = point) do
     :telemetry.execute([:datadog, :datastreams, :aggregator, :payloads_in], %{count: 1})
     GenServer.cast(__MODULE__, {:add, point})
+  end
+
+  def add(%Aggregator.Offset{} = offset) do
+    GenServer.cast(__MODULE__, {:add, offset})
   end
 
   @doc """
@@ -120,6 +126,19 @@ defmodule Datadog.DataStreams.Aggregator do
        | ts_type_current_buckets: new_ts_type_current_buckets,
          ts_type_origin_buckets: new_ts_type_origin_buckets
      }}
+  end
+
+  def handle_cast({:add, %Aggregator.Offset{} = offset}, state) do
+    new_ts_type_current_buckets =
+      Aggregator.Bucket.upsert(state.ts_type_current_buckets, offset.timestamp, fn bucket ->
+        type_key =
+          if offset.type == :commit, do: :latest_commit_offsets, else: :latest_produce_offsets
+
+        new_offsets = bucket |> Map.get(:type_key, []) |> Aggregator.Offset.upsert(offset)
+        Map.put(bucket, type_key, new_offsets)
+      end)
+
+    {:noreply, %{state | ts_type_current_buckets: new_ts_type_current_buckets}}
   end
 
   @doc false

@@ -39,7 +39,7 @@ defmodule Datadog.DataStreams.Integrations.Kafka do
 
   require OpenTelemetry.Tracer, as: Tracer
 
-  alias Datadog.DataStreams.{Context, Pathway, Propagator, Tags}
+  alias Datadog.DataStreams.{Aggregator, Context, Pathway, Propagator, Tags}
 
   @otel_attribute "pathway.hash"
 
@@ -89,6 +89,25 @@ defmodule Datadog.DataStreams.Integrations.Kafka do
   end
 
   @doc """
+  Tracks Kafka produce events via their offset. This is used by Datadog
+  to calculate the lag without requiring the consumer to be on and
+  reading trace headers.
+  """
+  @spec track_produce(String.t(), non_neg_integer(), integer()) :: :ok
+  def track_produce(topic, partition, offset) do
+    Aggregator.add(%Aggregator.Offset{
+      offset: offset,
+      timestamp: :erlang.system_time(:nanosecond),
+      type: :produce,
+      tags: %{
+        "partition" => partition,
+        "topic" => topic,
+        "type" => "kafka_produce"
+      }
+    })
+  end
+
+  @doc """
   Traces a Kafka message being consumed. Requires the current Kafka
   consumer group. Uses the pathway in the current
   `Datadog.DataStreams.Context`.
@@ -129,5 +148,25 @@ defmodule Datadog.DataStreams.Integrations.Kafka do
     message
     |> Map.take([:topic, :partition])
     |> Map.merge(%{type: "kafka", direction: "in", group: consumer_group})
+  end
+
+  @doc """
+  Tracks Kafka produce events via their offset. This is used by Datadog
+  to calculate the lag without requiring the consumer to be on and
+  reading trace headers.
+  """
+  @spec track_consume(String.t(), String.t(), non_neg_integer(), integer()) :: :ok
+  def track_consume(group, topic, partition, offset) do
+    Aggregator.add(%Aggregator.Offset{
+      offset: offset,
+      timestamp: :erlang.system_time(:nanosecond),
+      type: :commit,
+      tags: %{
+        "consumer_group" => group,
+        "partition" => partition,
+        "topic" => topic,
+        "type" => "kafka_commit"
+      }
+    })
   end
 end

@@ -26,7 +26,10 @@ defmodule Datadog.DataStreams.Payload.Bucket do
     %__MODULE__{
       start: bucket.start,
       duration: bucket.duration,
-      stats: bucket.groups |> Map.values() |> Enum.map(&Payload.Point.new(&1, timestamp_type))
+      stats: bucket.groups |> Map.values() |> Enum.map(&Payload.Point.new(&1, timestamp_type)),
+      backlogs:
+        Enum.map(bucket.latest_produce_offsets, &Payload.Backlog.new/1) ++
+          Enum.map(bucket.latest_commit_offsets, &Payload.Backlog.new/1)
     }
   end
 end
