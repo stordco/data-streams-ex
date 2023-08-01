@@ -61,7 +61,7 @@ defmodule Datadog.DataStreams.Propagator do
         key in [@propagation_key_base64, @propagation_key]
       end)
 
-    removed_headers ++ [{@propagation_key, encode(pathway)}]
+    [{@propagation_key, encode(pathway)} | removed_headers]
   end
 
   def encode_header(value), do: value
@@ -180,6 +180,8 @@ defmodule Datadog.DataStreams.Propagator do
   """
   @spec decode(binary()) :: Pathway.t() | nil
   def decode(<<hash::binary-size(8), pathway::binary-size(6), edge::binary-size(6)>>) do
+    # This is the cleanest way I could think of to write it.
+    # credo:disable-for-lines:2 Credo.Check.Refactor.NegatedIsNil
     with pathway_start when not is_nil(pathway_start) <- decode_time(pathway),
          edge_start when not is_nil(edge_start) <- decode_time(edge) do
       %Pathway{

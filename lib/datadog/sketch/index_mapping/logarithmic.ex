@@ -11,15 +11,15 @@ defmodule Datadog.Sketch.IndexMapping.Logarithmic do
   our logic handling.
   """
 
+  @behaviour Datadog.Sketch.IndexMapping
+
+  alias Datadog.Sketch.IndexMapping
+
   defstruct gamma: 0.0,
             index_offset: 0.0,
             multiplier: 0.0
 
   @type t :: Datadog.Sketch.IndexMapping.t()
-
-  @behaviour Datadog.Sketch.IndexMapping
-
-  alias Datadog.Sketch.IndexMapping
 
   @doc """
   Creates a new Logarithmic index mapping with the given accuracy.
@@ -87,7 +87,7 @@ defmodule Datadog.Sketch.IndexMapping.Logarithmic do
       false
 
   """
-  @impl true
+  @impl Datadog.Sketch.IndexMapping
   @spec equals(t(), t()) :: boolean()
   def equals(%{gamma: sgamma, index_offset: sindex_offset}, %{
         gamma: ogamma,
@@ -111,7 +111,7 @@ defmodule Datadog.Sketch.IndexMapping.Logarithmic do
       21979
 
   """
-  @impl true
+  @impl Datadog.Sketch.IndexMapping
   @spec index(t(), float()) :: integer()
   def index(%{index_offset: index_offset, multiplier: multiplier}, value) do
     index = :math.log(value) * multiplier + index_offset
@@ -135,7 +135,7 @@ defmodule Datadog.Sketch.IndexMapping.Logarithmic do
       1.23355147396003e19
 
   """
-  @impl true
+  @impl Datadog.Sketch.IndexMapping
   @spec value(t(), integer()) :: float()
   def value(self, index) do
     lower_bound(self, index) * (1 + relative_accuracy(self))
@@ -153,7 +153,7 @@ defmodule Datadog.Sketch.IndexMapping.Logarithmic do
       1.2214109013609646
 
   """
-  @impl true
+  @impl Datadog.Sketch.IndexMapping
   @spec lower_bound(t(), integer()) :: float()
   def lower_bound(%{index_offset: index_offset, multiplier: multiplier}, index) do
     :math.exp((index - index_offset) / multiplier)
@@ -167,7 +167,7 @@ defmodule Datadog.Sketch.IndexMapping.Logarithmic do
       0.009999999999999898
 
   """
-  @impl true
+  @impl Datadog.Sketch.IndexMapping
   @spec relative_accuracy(t()) :: float()
   def relative_accuracy(%{gamma: gamma}) do
     1 - 2 / (1 + gamma)
@@ -182,7 +182,7 @@ defmodule Datadog.Sketch.IndexMapping.Logarithmic do
       %Datadog.Sketch.Protobuf.IndexMapping{gamma: 1.02020202020202, interpolation: :NONE}
 
   """
-  @impl true
+  @impl Datadog.Sketch.IndexMapping
   @spec to_proto(t()) :: struct()
   def to_proto(self) do
     %Datadog.Sketch.Protobuf.IndexMapping{

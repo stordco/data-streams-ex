@@ -30,9 +30,9 @@ defmodule Datadog.DataStreams.Aggregator do
 
   use GenServer
 
-  alias Datadog.DataStreams.{Aggregator, Config, Payload, Transport}
-
   require Logger
+
+  alias Datadog.DataStreams.{Aggregator, Config, Payload, Transport}
 
   @send_interval 10_000
 
@@ -77,8 +77,8 @@ defmodule Datadog.DataStreams.Aggregator do
 
       iex> :ok = Aggregator.flush()
   """
-  @spec flush() :: :ok
-  def flush() do
+  @spec flush :: :ok
+  def flush do
     Process.send(__MODULE__, :send, [])
   end
 
@@ -131,8 +131,7 @@ defmodule Datadog.DataStreams.Aggregator do
   def handle_cast({:add, %Aggregator.Offset{} = offset}, state) do
     new_ts_type_current_buckets =
       Aggregator.Bucket.upsert(state.ts_type_current_buckets, offset.timestamp, fn bucket ->
-        type_key =
-          if offset.type == :commit, do: :latest_commit_offsets, else: :latest_produce_offsets
+        type_key = if offset.type == :commit, do: :latest_commit_offsets, else: :latest_produce_offsets
 
         new_offsets = bucket |> Map.get(:type_key, []) |> Aggregator.Offset.upsert(offset)
         Map.put(bucket, type_key, new_offsets)

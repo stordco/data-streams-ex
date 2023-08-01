@@ -4,7 +4,12 @@ defmodule Datadog.Sketch.Store.Dense do
   number of bins are bound only by the size of the `:array` that can be allocated.
   """
 
+  @behaviour Datadog.Sketch.Store
+
   alias Datadog.Sketch.Store
+
+  @array_length_overhead 64
+  @array_length_growth_increment 0.1
 
   defstruct bins: :array.new(0, [{:fixed, true}, {:default, 0}]),
             count: 0.0,
@@ -22,11 +27,6 @@ defmodule Datadog.Sketch.Store.Dense do
           max_index: integer()
         }
 
-  @behaviour Datadog.Sketch.Store
-
-  @array_length_overhead 64
-  @array_length_growth_increment 0.1
-
   @doc """
   Creates a new dense store.
 
@@ -36,8 +36,8 @@ defmodule Datadog.Sketch.Store.Dense do
         %Dense{}
 
   """
-  @spec new() :: t()
-  def new() do
+  @spec new :: t()
+  def new do
     %__MODULE__{}
   end
 
@@ -49,7 +49,7 @@ defmodule Datadog.Sketch.Store.Dense do
         iex> %Dense{} = Dense.add(Dense.new(), 100)
 
   """
-  @impl true
+  @impl Datadog.Sketch.Store
   @spec add(t(), integer()) :: t()
   def add(store, index) do
     add_with_count(store, index, 1.0)
@@ -63,7 +63,7 @@ defmodule Datadog.Sketch.Store.Dense do
         iex> %Dense{} = Dense.add_bin(Dense.new(), %{index: 100, count: 13.13})
 
   """
-  @impl true
+  @impl Datadog.Sketch.Store
   @spec add_bin(t(), Store.bin()) :: t()
   def add_bin(store, %{count: 0.0}), do: store
 
@@ -82,7 +82,7 @@ defmodule Datadog.Sketch.Store.Dense do
         ...> ])
 
   """
-  @impl true
+  @impl Datadog.Sketch.Store
   @spec add_bins(t(), [Store.bin()]) :: t()
   def add_bins(store, bins) when is_list(bins),
     do: Enum.reduce(bins, store, &add_bin(&2, &1))
@@ -97,7 +97,7 @@ defmodule Datadog.Sketch.Store.Dense do
         iex> %Dense{} = Dense.add_with_count(Dense.new(), 987, 8.3e12)
 
   """
-  @impl true
+  @impl Datadog.Sketch.Store
   @spec add_with_count(t(), integer(), float()) :: t()
   def add_with_count(store, _index, 0), do: store
 
@@ -187,10 +187,15 @@ defmodule Datadog.Sketch.Store.Dense do
 
   @spec shift_counts(t(), integer()) :: t()
   defp shift_counts(store, shift) do
-    new_array = :array.new(:array.size(store.bins), [{:fixed, true}, {:default, 0}])
+    new_array =
+      store.bins
+      |> :array.size()
+      |> :array.new([{:fixed, true}, {:default, 0}])
 
     new_array =
-      Enum.reduce(:array.sparse_to_orddict(store.bins), new_array, fn {k, v}, new_array ->
+      store.bins
+      |> :array.sparse_to_orddict()
+      |> Enum.reduce(new_array, fn {k, v}, new_array ->
         :array.set(k + shift, v, new_array)
       end)
 
@@ -211,7 +216,7 @@ defmodule Datadog.Sketch.Store.Dense do
         false
 
   """
-  @impl true
+  @impl Datadog.Sketch.Store
   @spec empty?(t()) :: bool()
   def empty?(%{count: 0.0}), do: true
   def empty?(_store), do: false
@@ -243,7 +248,7 @@ defmodule Datadog.Sketch.Store.Dense do
         872.36
 
   """
-  @impl true
+  @impl Datadog.Sketch.Store
   @spec total_count(t()) :: float()
   def total_count(%{count: count}), do: count
 
@@ -266,7 +271,7 @@ defmodule Datadog.Sketch.Store.Dense do
         4
 
   """
-  @impl true
+  @impl Datadog.Sketch.Store
   @spec min_index(t()) :: integer()
   def min_index(%{count: 0.0}), do: 0
   def min_index(%{min_index: min_index}), do: min_index
@@ -294,7 +299,7 @@ defmodule Datadog.Sketch.Store.Dense do
         65
 
   """
-  @impl true
+  @impl Datadog.Sketch.Store
   @spec max_index(t()) :: integer()
   def max_index(%{count: 0.0}), do: 0
   def max_index(%{max_index: max_index}), do: max_index
@@ -324,15 +329,16 @@ defmodule Datadog.Sketch.Store.Dense do
         12
 
   """
-  @impl true
+  @impl Datadog.Sketch.Store
   @spec key_at_rank(t(), float()) :: integer()
   def key_at_rank(store, rank) when rank < 0.0,
     do: key_at_rank(store, 0.0)
 
   def key_at_rank(store, rank) do
     {step, result} =
-      Enum.reduce_while(:array.sparse_to_orddict(store.bins), {:not_end, 0.0}, fn {i, b},
-                                                                                  {step, n} ->
+      store.bins
+      |> :array.sparse_to_orddict()
+      |> Enum.reduce_while({:not_end, 0.0}, fn {i, b}, {step, n} ->
         n = n + b
 
         if n > rank do
@@ -377,7 +383,7 @@ defmodule Datadog.Sketch.Store.Dense do
         }
 
   """
-  @impl true
+  @impl Datadog.Sketch.Store
   @spec to_proto(t()) :: Datadog.Sketch.Protobuf.Store.t()
   def to_proto(%{count: 0.0}), do: %Datadog.Sketch.Protobuf.Store{contiguousBinCounts: nil}
 
@@ -386,7 +392,9 @@ defmodule Datadog.Sketch.Store.Dense do
     new_array = :array.new(new_length, [{:fixed, true}, {:default, 0}])
 
     new_array =
-      Enum.reduce(:array.sparse_to_orddict(store.bins), new_array, fn {k, v}, new_array ->
+      store.bins
+      |> :array.sparse_to_orddict()
+      |> Enum.reduce(new_array, fn {k, v}, new_array ->
         :array.set(k + store.offset - store.min_index, v, new_array)
       end)
 
@@ -412,7 +420,7 @@ defmodule Datadog.Sketch.Store.Dense do
         120.0
 
   """
-  @impl true
+  @impl Datadog.Sketch.Store
   @spec reweight(t(), float()) :: t()
   def reweight(store, weight) do
     new_bins = :array.sparse_map(fn _i, v -> v * weight end, store.bins)

@@ -29,8 +29,8 @@ defmodule Datadog.DataStreams.Config do
       "unnamed-elixir-service"
 
   """
-  @spec service() :: String.t()
-  def service() do
+  @spec service :: String.t()
+  def service do
     otel_service_name =
       :opentelemetry
       |> Application.get_env(:resource, [])
@@ -70,8 +70,8 @@ defmodule Datadog.DataStreams.Config do
       ""
 
   """
-  @spec env() :: String.t()
-  def env() do
+  @spec env :: String.t()
+  def env do
     otel_service_env =
       :opentelemetry
       |> Application.get_env(:resource, [])
@@ -105,8 +105,8 @@ defmodule Datadog.DataStreams.Config do
       ""
 
   """
-  @spec primary_tag() :: String.t()
-  def primary_tag() do
+  @spec primary_tag :: String.t()
+  def primary_tag do
     :data_streams
     |> Application.get_env(:metadata, [])
     |> Keyword.get(:primary_tag, "")

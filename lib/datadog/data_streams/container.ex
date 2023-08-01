@@ -15,9 +15,7 @@ defmodule Datadog.DataStreams.Container do
   @task_source Regex.source(~r/[0-9a-f]{32}-\d+/)
 
   @exp_line ~r/^\d+:[^:]*:(.+)$/
-  @exp_container_id Regex.compile!(
-                      "(#{@uuid_source}|#{@container_source}|#{@task_source})(?:.scope)?$"
-                    )
+  @exp_container_id Regex.compile!("(#{@uuid_source}|#{@container_source}|#{@task_source})(?:.scope)?$")
 
   @doc """
   Starts the agent and stores the current container id in memory.
@@ -29,16 +27,16 @@ defmodule Datadog.DataStreams.Container do
   @doc """
   Returns the current container id.
   """
-  @spec get() :: String.t() | nil
-  def get() do
+  @spec get :: String.t() | nil
+  def get do
     Agent.get(__MODULE__, & &1)
   end
 
   @doc """
   Attempts to return the container id from the cgroup path (`#{@cgroup_path}`). Empty on failure.
   """
-  @spec read_container_id() :: String.t() | nil
-  def read_container_id(),
+  @spec read_container_id :: String.t() | nil
+  def read_container_id,
     do: read_container_id(@cgroup_path)
 
   @doc """
