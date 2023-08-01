@@ -1,4 +1,8 @@
-# Used by "mix format"
+# This file is synced with stordco/common-config-elixir. Any changes will be overwritten.
+
 [
-  inputs: ["{mix,.formatter}.exs", "{config,lib,test}/**/*.{ex,exs}"]
+  import_deps: [],
+  inputs: ["*.{ex,exs}", "{config,lib,priv,test}/**/*.{ex,exs}"],
+  line_length: 120,
+  plugins: []
 ]
