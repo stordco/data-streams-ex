@@ -39,7 +39,6 @@ defmodule Datadog.DataStreams.MixProject do
       {:doctor, "~> 0.19.0", only: [:dev, :test], runtime: false},
       {:ex_doc, "~> 0.28", only: [:dev, :test], runtime: false},
       {:finch, ">= 0.1.0"},
-      {:fnv, "~> 0.3.2"},
       {:jason, "~> 1.0"},
       {:msgpax, "~> 2.3.1"},
       {:opentelemetry_api, ">= 1.0.0"},
