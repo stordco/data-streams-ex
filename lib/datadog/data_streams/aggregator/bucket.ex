@@ -7,22 +7,17 @@ defmodule Datadog.DataStreams.Aggregator.Bucket do
   @bucket_duration 10 * 1_000 * 1_000 * 1_000
 
   defstruct groups: %{},
-            latest_commit_offsets: %{},
-            latest_produce_offsets: %{},
+            latest_commit_offsets: [],
+            latest_produce_offsets: [],
             start: 0,
             duration: @bucket_duration
 
   @type t :: %__MODULE__{
           groups: %{non_neg_integer() => Aggregator.Group.t()},
-          latest_commit_offsets: %{non_neg_integer() => non_neg_integer()},
-          latest_produce_offsets: %{partition_key() => non_neg_integer()},
+          latest_commit_offsets: [Aggregator.Offset.t()],
+          latest_produce_offsets: [Aggregator.Offset.t()],
           start: non_neg_integer(),
           duration: non_neg_integer()
-        }
-
-  @type partition_key :: %{
-          partition: non_neg_integer(),
-          topic: String.t()
         }
 
   @spec align_timestamp(non_neg_integer()) :: non_neg_integer()

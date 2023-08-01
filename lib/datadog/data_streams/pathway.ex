@@ -18,7 +18,7 @@ defmodule Datadog.DataStreams.Pathway do
   [DSG]: https://github.com/DataDog/data-streams-go/blob/main/datastreams/pathway.go
   """
 
-  alias Datadog.DataStreams.{Aggregator, Config, Tags}
+  alias Datadog.DataStreams.{Aggregator, Config, FNV, Tags}
 
   defstruct hash: 0,
             pathway_start: 0,
@@ -64,7 +64,7 @@ defmodule Datadog.DataStreams.Pathway do
 
     ([service, env, primary_tag] ++ edge_tags)
     |> Enum.join("")
-    |> FNV.FNV1.hash64()
+    |> FNV.hash64()
   end
 
   @doc """
@@ -87,7 +87,7 @@ defmodule Datadog.DataStreams.Pathway do
   """
   @spec pathway_hash(non_neg_integer(), non_neg_integer()) :: non_neg_integer()
   def pathway_hash(node_hash, parent_hash) do
-    FNV.FNV1.hash64(binary_encode_unsigned(node_hash) <> binary_encode_unsigned(parent_hash))
+    FNV.hash64(binary_encode_unsigned(node_hash) <> binary_encode_unsigned(parent_hash))
   end
 
   defp binary_encode_unsigned(int) do

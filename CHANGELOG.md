@@ -1,5 +1,12 @@
 # Changelog
 
+## [1.2.0](https://github.com/stordco/data-streams-ex/compare/v1.1.2...v1.2.0) (2023-07-10)
+
+
+### Features
+
+* allow tracking kafka produce and consume offsets ([#18](https://github.com/stordco/data-streams-ex/issues/18)) ([ebab69b](https://github.com/stordco/data-streams-ex/commit/ebab69bb896eddb23913a49098ebc3460e4ae72c))
+
 ## [1.1.2](https://github.com/stordco/data-streams-ex/compare/v1.1.1...v1.1.2) (2023-06-05)
 
 
