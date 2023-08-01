@@ -39,8 +39,8 @@ defmodule Datadog.Sketch do
       iex> %Sketch{} = Sketch.new_default()
 
   """
-  @spec new_default() :: t()
-  def new_default() do
+  @spec new_default :: t()
+  def new_default do
     %__MODULE__{
       index_mapping: IndexMapping.Logarithmic.new(0.01),
       positive_value_store: Store.Dense.new(),

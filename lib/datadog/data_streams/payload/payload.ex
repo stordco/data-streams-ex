@@ -63,7 +63,7 @@ defmodule Datadog.DataStreams.Payload do
   def add_bucket(payload, %Aggregator.Bucket{groups: %{}}), do: payload
 
   def add_bucket(%__MODULE__{} = payload, %Aggregator.Bucket{} = bucket, timestamp_type) do
-    %{payload | stats: payload.stats ++ [Payload.Bucket.new(bucket, timestamp_type)]}
+    %{payload | stats: [Payload.Bucket.new(bucket, timestamp_type) | payload.stats]}
   end
 
   @doc """

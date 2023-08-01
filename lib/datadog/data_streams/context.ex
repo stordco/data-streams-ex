@@ -15,17 +15,17 @@ defmodule Datadog.DataStreams.Context do
   [OTB]: https://github.com/open-telemetry/opentelemetry-erlang/blob/main/apps/opentelemetry_api/src/otel_baggage.erl
   """
 
-  @context_key "dd-datastreams"
-
   alias Datadog.DataStreams.{Pathway, Tags}
+
+  @context_key "dd-datastreams"
 
   @doc """
   Returns the current existing Pathway from OpenTelemetry. If
   there is no Pathway in the current context, `nil` will be
   returned
   """
-  @spec get() :: Pathway.t() | nil
-  def get() do
+  @spec get :: Pathway.t() | nil
+  def get do
     OpenTelemetry.Ctx.get_value(@context_key, nil)
   end
 
@@ -42,8 +42,8 @@ defmodule Datadog.DataStreams.Context do
   Removes the current existing Pathway from OpenTelemetry. Returns
   the value that existing in OpenTelemetry.
   """
-  @spec clear() :: Pathway.t() | nil
-  def clear() do
+  @spec clear :: Pathway.t() | nil
+  def clear do
     case get() do
       nil ->
         nil

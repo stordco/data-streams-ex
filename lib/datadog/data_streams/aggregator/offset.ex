@@ -40,7 +40,7 @@ defmodule Datadog.DataStreams.Aggregator.Offset do
       end)
 
     if is_nil(matching_index) do
-      offsets ++ [upsert_offset]
+      [upsert_offset | offsets]
     else
       List.replace_at(offsets, matching_index, upsert_offset)
     end

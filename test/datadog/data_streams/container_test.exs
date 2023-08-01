@@ -22,7 +22,7 @@ defmodule Datadog.DataStreams.ContainerTest do
 
     {:ok, stream} = StringIO.open(file)
 
-    assert Container.parse_container_id(IO.binstream(stream, :line)) ===
+    assert stream |> IO.binstream(:line) |> Container.parse_container_id() ===
              "8c046cb0b72cd4c99f51b5591cd5b095967f58ee003710a45280c28ee1a9c7fa"
   end
 
@@ -33,7 +33,7 @@ defmodule Datadog.DataStreams.ContainerTest do
 
     {:ok, stream} = StringIO.open(file)
 
-    assert Container.parse_container_id(IO.binstream(stream, :line)) ===
+    assert stream |> IO.binstream(:line) |> Container.parse_container_id() ===
              "8c046cb0b72cd4c99f51b5591cd5b095967f58ee003710a45280c28ee1a9c7fa"
   end
 
@@ -44,7 +44,7 @@ defmodule Datadog.DataStreams.ContainerTest do
 
     {:ok, stream} = StringIO.open(file)
 
-    assert Container.parse_container_id(IO.binstream(stream, :line)) === nil
+    assert stream |> IO.binstream(:line) |> Container.parse_container_id() === nil
   end
 
   test "parse_container_id/1 can parse a stream (example 4)" do
@@ -54,7 +54,7 @@ defmodule Datadog.DataStreams.ContainerTest do
 
     {:ok, stream} = StringIO.open(file)
 
-    assert Container.parse_container_id(IO.binstream(stream, :line)) ===
+    assert stream |> IO.binstream(:line) |> Container.parse_container_id() ===
              "432624d2150b349fe35ba397284dea788c2bf66b885d14dfc1569b01890ca7da"
   end
 
@@ -65,7 +65,7 @@ defmodule Datadog.DataStreams.ContainerTest do
 
     {:ok, stream} = StringIO.open(file)
 
-    assert Container.parse_container_id(IO.binstream(stream, :line)) ===
+    assert stream |> IO.binstream(:line) |> Container.parse_container_id() ===
              "34dc0b5e626f2c5c4c5170e34b10e7654ce36f0fcd532739f4445baabea03376"
   end
 
@@ -76,7 +76,7 @@ defmodule Datadog.DataStreams.ContainerTest do
 
     {:ok, stream} = StringIO.open(file)
 
-    assert Container.parse_container_id(IO.binstream(stream, :line)) ===
+    assert stream |> IO.binstream(:line) |> Container.parse_container_id() ===
              "34dc0b5e-626f-2c5c-4c51-70e34b10e765"
   end
 
@@ -87,7 +87,7 @@ defmodule Datadog.DataStreams.ContainerTest do
 
     {:ok, stream} = StringIO.open(file)
 
-    assert Container.parse_container_id(IO.binstream(stream, :line)) ===
+    assert stream |> IO.binstream(:line) |> Container.parse_container_id() ===
              "34dc0b5e626f2c5c4c5170e34b10e765-1234567890"
   end
 
@@ -98,7 +98,7 @@ defmodule Datadog.DataStreams.ContainerTest do
 
     {:ok, stream} = StringIO.open(file)
 
-    assert Container.parse_container_id(IO.binstream(stream, :line)) ===
+    assert stream |> IO.binstream(:line) |> Container.parse_container_id() ===
              "34dc0b5e626f2c5c4c5170e34b10e7654ce36f0fcd532739f4445baabea03376"
   end
 
@@ -111,7 +111,7 @@ defmodule Datadog.DataStreams.ContainerTest do
 
     {:ok, stream} = StringIO.open(file)
 
-    assert Container.parse_container_id(IO.binstream(stream, :line)) ===
+    assert stream |> IO.binstream(:line) |> Container.parse_container_id() ===
              "34dc0b5e626f2c5c4c5170e34b10e7654ce36f0fcd532739f4445baabea03376"
   end
 
@@ -134,7 +134,7 @@ defmodule Datadog.DataStreams.ContainerTest do
 
     {:ok, stream} = StringIO.open(file)
 
-    assert Container.parse_container_id(IO.binstream(stream, :line)) ===
+    assert stream |> IO.binstream(:line) |> Container.parse_container_id() ===
              "6f265890-5165-7fab-6b52-18d1"
   end
 
@@ -145,7 +145,7 @@ defmodule Datadog.DataStreams.ContainerTest do
 
     {:ok, stream} = StringIO.open(file)
 
-    assert Container.parse_container_id(IO.binstream(stream, :line)) ===
+    assert stream |> IO.binstream(:line) |> Container.parse_container_id() ===
              "6f265890-5165-7fab-6b52-18d1"
   end
 
@@ -153,8 +153,7 @@ defmodule Datadog.DataStreams.ContainerTest do
   test "read_container_id/1 can parse a file", %{tmp_dir: tmp_dir} do
     cid = "8c046cb0b72cd4c99f51b5591cd5b095967f58ee003710a45280c28ee1a9c7fa"
 
-    cgroup_contents =
-      "10:hugetlb:/kubepods/burstable/podfd52ef25-a87d-11e9-9423-0800271a638e/" <> cid
+    cgroup_contents = "10:hugetlb:/kubepods/burstable/podfd52ef25-a87d-11e9-9423-0800271a638e/" <> cid
 
     file_path = Path.join(tmp_dir, "fake-cgroup")
 

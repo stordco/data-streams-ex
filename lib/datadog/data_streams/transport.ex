@@ -44,7 +44,7 @@ defmodule Datadog.DataStreams.Transport do
     end
   end
 
-  defp request_headers() do
+  defp request_headers do
     case Container.get() do
       nil -> @headers
       container_id -> [{"Datadog-Container-ID", container_id}] ++ @headers
@@ -82,7 +82,7 @@ defmodule Datadog.DataStreams.Transport do
   @spec header?(Mint.Types.headers(), String.t(), String.t()) :: bool()
   defp header?(headers, key, value) do
     Enum.any?(headers, fn {k, v} ->
-      String.downcase(k) == key and String.contains?(String.downcase(v), value)
+      String.downcase(k) == key and v |> String.downcase() |> String.contains?(value)
     end)
   end
 end
