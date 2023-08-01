@@ -1,5 +1,15 @@
 # Changelog
 
+## [1.2.1](https://github.com/stordco/data-streams-ex/compare/v1.2.0...v1.2.1) (2023-08-01)
+
+
+### Miscellaneous
+
+* Add elixir 1.15 to CI tests ([#21](https://github.com/stordco/data-streams-ex/issues/21)) ([d43b381](https://github.com/stordco/data-streams-ex/commit/d43b3817e7154bfb1e7f23f913343afc2d44f76c))
+* Migrate to internal FNV module ([#22](https://github.com/stordco/data-streams-ex/issues/22)) ([e3f6f91](https://github.com/stordco/data-streams-ex/commit/e3f6f9117b1d64d7db4288b79bba36fbbecaa80d))
+* Setup common config elixir ([180752d](https://github.com/stordco/data-streams-ex/commit/180752d5056e8bfff254809b78a33f3c24ef5d0e))
+* Sync files with stordco/common-config-elixir ([#23](https://github.com/stordco/data-streams-ex/issues/23)) ([a1360fd](https://github.com/stordco/data-streams-ex/commit/a1360fdcd28fbb1f908210b386f706f4adfde438))
+
 ## [1.2.0](https://github.com/stordco/data-streams-ex/compare/v1.1.2...v1.2.0) (2023-07-10)
 
 
