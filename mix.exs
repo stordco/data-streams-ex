@@ -42,7 +42,7 @@ defmodule Datadog.DataStreams.MixProject do
       {:jason, "~> 1.0"},
       {:msgpax, "~> 2.3.1"},
       {:opentelemetry_api, ">= 1.0.0"},
-      {:protobuf, "~> 0.10.0"}
+      {:protobuf, ">= 0.10.0"}
     ]
   end
 

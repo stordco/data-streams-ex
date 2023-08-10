@@ -71,7 +71,9 @@ defimpl Msgpax.Packer, for: Datadog.DataStreams.Payload.Point do
       |> Msgpax.Packer.pack(),
       # TimestampType
       [0xAD, 0x54, 0x69, 0x6D, 0x65, 0x73, 0x74, 0x61, 0x6D, 0x70, 0x54, 0x79, 0x70, 0x65],
-      Msgpax.Packer.pack(to_string(data.timestamp_type))
+      data.timestamp_type
+      |> to_string()
+      |> Msgpax.Packer.pack()
     ]
   end
 end
