@@ -1,5 +1,13 @@
 # Changelog
 
+## [1.2.2](https://github.com/stordco/data-streams-ex/compare/v1.2.1...v1.2.2) (2023-08-10)
+
+
+### Miscellaneous
+
+* Sync files with stordco/common-config-elixir ([#25](https://github.com/stordco/data-streams-ex/issues/25)) ([85a61bc](https://github.com/stordco/data-streams-ex/commit/85a61bc3e0f3ce466da4b7cf2d4beb74ff334462))
+* Update dependencies ([#27](https://github.com/stordco/data-streams-ex/issues/27)) ([d16116b](https://github.com/stordco/data-streams-ex/commit/d16116bfb85898d169d9bb22ce8f427f991c85a0))
+
 ## [1.2.1](https://github.com/stordco/data-streams-ex/compare/v1.2.0...v1.2.1) (2023-08-01)
 
 
