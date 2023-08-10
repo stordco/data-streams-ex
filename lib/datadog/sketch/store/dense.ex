@@ -364,7 +364,7 @@ defmodule Datadog.Sketch.Store.Dense do
         iex> store = Dense.add(Dense.new(), 4)
         ...> Dense.to_proto(store)
         %Datadog.Sketch.Protobuf.Store{
-          binCounts: [],
+          binCounts: %{},
           contiguousBinCounts: [1.0],
           contiguousBinIndexOffset: 4
         }
@@ -377,7 +377,7 @@ defmodule Datadog.Sketch.Store.Dense do
         ...> ])
         ...> Dense.to_proto(store)
         %Datadog.Sketch.Protobuf.Store{
-          binCounts: [],
+          binCounts: %{},
           contiguousBinCounts: [12.48, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 847.4, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 12.48],
           contiguousBinIndexOffset: 4
         }
