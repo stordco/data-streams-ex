@@ -1,10 +1,16 @@
----
-name: Publish
+# This file is synced with stordco/common-config-elixir. Any changes will be overwritten.
+
+name: Production
 
 on:
   release:
     types:
-      - published
+      - released
+      - prereleased
+  workflow_dispatch:
+
+concurrency:
+  group: Production
 
 jobs:
   Hex:
@@ -12,13 +18,15 @@ jobs:
 
     steps:
       - name: Checkout
-        uses: actions/checkout@v3
+        uses: actions/checkout@v4
 
       - name: Setup Elixir
         uses: stordco/actions-elixir/setup@v1
         with:
           github-token: ${{ secrets.GH_PERSONAL_ACCESS_TOKEN }}
           hex-token: ${{ secrets.HEX_API_KEY }}
+          oban-fingerprint: ${{ secrets.OBAN_KEY_FINGERPRINT }}
+          oban-token: ${{ secrets.OBAN_LICENSE_KEY }}
 
       - name: Compile
         run: mix compile --docs
@@ -27,3 +35,4 @@ jobs:
         run: mix hex.publish --yes
         env:
           HEX_API_KEY: ${{ secrets.HEX_API_KEY }}
+

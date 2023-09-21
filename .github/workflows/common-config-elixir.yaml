@@ -21,7 +21,7 @@ jobs:
 
     steps:
       - name: Checkout
-        uses: actions/checkout@v3
+        uses: actions/checkout@v4
         with:
           token: ${{ secrets.GH_PERSONAL_ACCESS_TOKEN }}
           persist-credentials: true
@@ -29,7 +29,7 @@ jobs:
       - name: Setup Node
         uses: actions/setup-node@v3
         with:
-          node-version: 16
+          node-version: 18
 
       - name: Setup Elixir
         uses: stordco/actions-elixir/setup@v1
@@ -50,3 +50,4 @@ jobs:
           sync-auth: stord-engineering-account:${{ secrets.GH_PERSONAL_ACCESS_TOKEN }}
           sync-branch: latest
           sync-repository: github.com/stordco/common-config-elixir.git
+

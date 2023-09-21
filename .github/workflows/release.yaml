@@ -21,3 +21,4 @@ jobs:
           manifest-file: .release-please-manifest.json
           release-type: elixir
           token: ${{ secrets.GH_PERSONAL_ACCESS_TOKEN }}
+
