@@ -14,7 +14,13 @@ defmodule Datadog.DataStreams.MixProject do
       docs: docs(),
       package: package(),
       source_url: "https://github.com/stordco/data-streams-ex",
-      test_coverage: test_coverage()
+      test_coverage: test_coverage(),
+      preferred_cli_env: [
+        coveralls: :test,
+        "coveralls.detail": :test,
+        "coveralls.html": :test,
+        "coveralls.circle": :test
+      ]
     ]
   end
 
@@ -35,12 +41,13 @@ defmodule Datadog.DataStreams.MixProject do
     [
       {:benchee, "~> 1.0", only: [:dev, :test]},
       {:credo, "~> 1.6", only: [:dev, :test], runtime: false},
-      {:dialyxir, "~> 1.1", only: [:dev, :test], runtime: false},
-      {:doctor, "~> 0.19.0", only: [:dev, :test], runtime: false},
-      {:ex_doc, "~> 0.28", only: [:dev, :test], runtime: false},
+      {:excoveralls, "~> 0.17.1", only: :test},
+      {:dialyxir, "~> 1.4", only: [:dev, :test], runtime: false},
+      {:doctor, "~> 0.21.0", only: [:dev, :test], runtime: false},
+      {:ex_doc, "~> 0.30", only: [:dev, :test], runtime: false},
       {:finch, ">= 0.1.0"},
       {:jason, "~> 1.0"},
-      {:msgpax, "~> 2.3.1"},
+      {:msgpax, "~> 2.4"},
       {:opentelemetry_api, ">= 1.0.0"},
       {:protobuf, ">= 0.10.0"}
     ]
@@ -115,7 +122,8 @@ defmodule Datadog.DataStreams.MixProject do
       ],
       summary: [
         threshold: 0
-      ]
+      ],
+      tool: ExCoveralls
     ]
   end
 end
