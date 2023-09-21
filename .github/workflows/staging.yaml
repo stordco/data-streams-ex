@@ -17,6 +17,10 @@ jobs:
       name: Documentation
       url: https://data-streams-ex.stord.engineering
 
+    permissions:
+      contents: read
+      id-token: write
+
     runs-on: ubuntu-latest
 
     steps:
