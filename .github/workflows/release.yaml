@@ -22,6 +22,7 @@ jobs:
         with:
           command: manifest
           config-file: .release-please-config.json
+          default-branch: main
           manifest-file: .release-please-manifest.json
           release-type: elixir
           token: ${{ secrets.GH_PERSONAL_ACCESS_TOKEN }}
