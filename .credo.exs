@@ -119,7 +119,8 @@
          [
            order:
              ~w(moduledoc behaviour use import require alias module_attribute defstruct callback macrocallback optional_callback)a,
-           ignore: [:type]
+           ignore: [:type],
+           ignore_module_attributes: [:contract, :decorate, :operation, :trace]
          ]},
         {Credo.Check.Readability.StringSigils, []},
         {Credo.Check.Readability.TrailingBlankLine, []},

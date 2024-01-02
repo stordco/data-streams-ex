@@ -12,6 +12,7 @@ on:
   push:
     branches:
       - main
+      - code-freeze/**
   workflow_call:
     secrets:
       CI_SERVICE_KEY:
