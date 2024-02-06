@@ -34,9 +34,11 @@ jobs:
       - name: Setup Elixir
         uses: stordco/actions-elixir/setup@v1
         with:
+          elixir-version: "1.15"
           github-token: ${{ secrets.GH_PERSONAL_ACCESS_TOKEN }}
           hex-token: ${{ secrets.HEX_API_KEY }}
-          elixir-version: "1.15"
+          oban-fingerprint: ${{ secrets.OBAN_KEY_FINGERPRINT }}
+          oban-token: ${{ secrets.OBAN_LICENSE_KEY }}
           otp-version: "26.0"
 
       - name: Sync

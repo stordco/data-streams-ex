@@ -31,4 +31,3 @@ jobs:
             feat!: a breaking change
 
             Note: Adding ! (i.e. `feat!:`) represents a breaking change and will result in a SemVer major release.
-
