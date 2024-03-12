@@ -28,8 +28,48 @@ concurrency:
   cancel-in-progress: true
 
 jobs:
+  Changed:
+    name: Changed Files
+    runs-on: ubuntu-latest
+
+    outputs:
+      database: ${{ steps.changed.outputs.database_any_changed }}
+      docker: ${{ steps.changed.outputs.docker_any_changed }}
+      elixir: ${{ steps.changed.outputs.elixir_any_changed }}
+      helm: ${{ steps.changed.outputs.helm_any_changed }}
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 2
+
+      - id: changed
+        name: Get Changed Files
+        uses: tj-actions/changed-files@v42
+        with:
+          files_yaml: |
+            database:
+              - '.github/workflows/ci.yaml'
+              - 'priv/*repo/**'
+            docker:
+              - '.github/workflows/ci.yaml'
+              - 'Dockerfile'
+            elixir:
+              - '.github/workflows/ci.yaml'
+              - 'priv/**'
+              - '**.ex'
+              - '**.exs'
+              - '**.heex'
+            helm:
+              - '.github/workflows/ci.yaml'
+              - '.github/workflows/staging.yaml'
+              - '.github/workflows/production.yaml'
+              - 'helm/**'
+
   Credo:
-    if: ${{ !startsWith(github.head_ref, 'release-please--branches') }}
+    if: ${{ !startsWith(github.head_ref, 'release-please--branches') && needs.Changed.outputs.elixir == 'true' }}
+    needs: [Changed]
     runs-on: ubuntu-latest
 
     steps:
@@ -48,7 +88,8 @@ jobs:
         run: mix credo --strict
 
   Dependencies:
-    if: ${{ !startsWith(github.head_ref, 'release-please--branches') }}
+    if: ${{ !startsWith(github.head_ref, 'release-please--branches') && needs.Changed.outputs.elixir == 'true' }}
+    needs: [Changed]
     runs-on: ubuntu-latest
 
     steps:
@@ -67,7 +108,8 @@ jobs:
         run: mix deps.unlock --check-unused
 
   Dialyzer:
-    if: ${{ !startsWith(github.head_ref, 'release-please--branches') }}
+    if: ${{ !startsWith(github.head_ref, 'release-please--branches') && needs.Changed.outputs.elixir == 'true' }}
+    needs: [Changed]
     runs-on: ubuntu-latest
 
     steps:
@@ -86,7 +128,8 @@ jobs:
         run: mix dialyzer --format github
 
   Documentation:
-    if: ${{ !startsWith(github.head_ref, 'release-please--branches') }}
+    if: ${{ !startsWith(github.head_ref, 'release-please--branches') && needs.Changed.outputs.elixir == 'true' }}
+    needs: [Changed]
     runs-on: ubuntu-latest
 
     steps:
@@ -105,7 +148,8 @@ jobs:
         run: mix docs
 
   Format:
-    if: ${{ !startsWith(github.head_ref, 'release-please--branches') }}
+    if: ${{ !startsWith(github.head_ref, 'release-please--branches') && needs.Changed.outputs.elixir == 'true' }}
+    needs: [Changed]
     runs-on: ubuntu-latest
 
     steps:
