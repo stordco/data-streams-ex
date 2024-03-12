@@ -19,15 +19,31 @@ jobs:
 
     steps:
       - name: Check
-        uses: stordco/actions-pr-title@v1.0.0
+        uses: actions/github-script@v7
         with:
-          regex: '^(feat!|fix!|fix|feat|chore|(fix|feat|chore)\(\w.*\)):\s(\[\w{1,8}-\d{1,8}\]|.*).*'
-          hint: |
-            Your PR title does not match the Stord common convention. Please rename your PR to match one of the following formats:
+          github-token: ${{ secrets.GITHUB_TOKEN }}
+          script: |
+            const title = context.payload?.pull_request?.title;
 
-            chore: a small insignificant change
-            fix: [JIRA-1234] fix an existing feature
-            feat: [JIRA-1234] a new feature to release
-            feat!: a breaking change
+            if (typeof title !== 'string') {
+              core.info("Pull request data not in payload. Skipping PR title check.");
+              return;
+            }
 
-            Note: Adding ! (i.e. `feat!:`) represents a breaking change and will result in a SemVer major release.
+            const REGEX = /^(feat!|fix!|fix|feat|chore|(fix|feat|chore)\(\w.*\)):\s(\[\w{1,8}-\d{1,8}\]|.*).*/;
+
+            if (!REGEX.test(title)) {
+              core.setFailed("Pull request title does not follow conventional commits");
+              console.log(`
+            Pull Request title "${title}" does not follow our [conventional commits](https://www.conventionalcommits.org/en/v1.0.0/) naming scheme.
+        
+            Please try renaming the PR to match one of these examples:
+
+                chore: a small insignificant change
+                fix: [JIRA-1234] fix an existing feature
+                feat: [JIRA-1234] a new feature to release
+                feat!: a breaking change
+
+            Note: Adding ! (i.e. \`feat!:\`) represents a breaking change and will result in a SemVer major release.
+                `.trim());
+            }
