@@ -19,6 +19,7 @@ jobs:
       url: https://data-streams-ex.stord.engineering
 
     permissions:
+      actions: read
       contents: read
       id-token: write
       pages: write
@@ -44,10 +45,10 @@ jobs:
         run: echo "data-streams-ex.stord.engineering" > ./doc/CNAME
 
       - name: Upload Artifacts
-        uses: actions/upload-pages-artifact@v2
+        uses: actions/upload-pages-artifact@v3
         with:
           path: ./doc
 
       - name: Deploy
-        uses: actions/deploy-pages@v2
+        uses: actions/deploy-pages@v4
 

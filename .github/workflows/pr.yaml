@@ -36,7 +36,7 @@ jobs:
               core.setFailed("Pull request title does not follow conventional commits");
               console.log(`
             Pull Request title "${title}" does not follow our [conventional commits](https://www.conventionalcommits.org/en/v1.0.0/) naming scheme.
-        
+
             Please try renaming the PR to match one of these examples:
 
                 chore: a small insignificant change

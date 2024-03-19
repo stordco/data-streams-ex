@@ -27,7 +27,7 @@ jobs:
           persist-credentials: true
 
       - name: Setup Node
-        uses: actions/setup-node@v3
+        uses: actions/setup-node@v4
         with:
           node-version: 18
 
@@ -52,4 +52,3 @@ jobs:
           sync-auth: stord-engineering-account:${{ secrets.GH_PERSONAL_ACCESS_TOKEN }}
           sync-branch: latest
           sync-repository: github.com/stordco/common-config-elixir.git
-
