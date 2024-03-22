@@ -46,7 +46,7 @@ jobs:
 
       - id: changed
         name: Get Changed Files
-        uses: tj-actions/changed-files@v42
+        uses: tj-actions/changed-files@v43
         with:
           files_yaml: |
             database:
