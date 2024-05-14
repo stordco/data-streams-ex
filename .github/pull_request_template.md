@@ -1,3 +1,9 @@
+## Related Ticket(s)
+
+<!--
+Enter the Jira issue below in the following format: PROJECT-##
+-->
+
 ## Checklist
 
 <!--

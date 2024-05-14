@@ -55,8 +55,13 @@ jobs:
             docker:
               - '.github/workflows/ci.yaml'
               - 'Dockerfile'
+            documentation:
+              - 'priv/documentation/**'
+              - '**.ex'
+              - '**.md'
             elixir:
               - '.github/workflows/ci.yaml'
+              - '.tool-versions'
               - 'priv/**'
               - '**.ex'
               - '**.exs'
@@ -128,7 +133,7 @@ jobs:
         run: mix dialyzer --format github
 
   Documentation:
-    if: ${{ !startsWith(github.head_ref, 'release-please--branches') && needs.Changed.outputs.elixir == 'true' }}
+    if: ${{ !startsWith(github.head_ref, 'release-please--branches') && needs.Changed.outputs.documentation == 'true' }}
     needs: [Changed]
     runs-on: ubuntu-latest
 
