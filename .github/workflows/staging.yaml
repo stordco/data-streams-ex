@@ -38,7 +38,7 @@ jobs:
           oban-fingerprint: ${{ secrets.OBAN_KEY_FINGERPRINT }}
           oban-token: ${{ secrets.OBAN_LICENSE_KEY }}
 
-      - name: Build
+      - name: Docs
         run: mix docs
 
       - name: Set CNAME
