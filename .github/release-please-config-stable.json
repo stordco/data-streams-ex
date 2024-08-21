@@ -8,6 +8,11 @@
       "hidden": false
     },
     {
+      "type": "hotfix",
+      "section": "Hotfixes",
+      "hidden": true
+    },
+    {
       "type": "fix",
       "section": "Bug Fixes",
       "hidden": false
@@ -22,9 +27,7 @@
   "draft-pull-request": false,
   "packages": {
     ".": {
-      "extra-files": [
-        "README.md"
-      ],
+      "extra-files": ["README.md"],
       "release-type": "elixir"
     }
   },

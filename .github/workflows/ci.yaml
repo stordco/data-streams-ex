@@ -46,7 +46,7 @@ jobs:
 
       - id: changed
         name: Get Changed Files
-        uses: tj-actions/changed-files@v43
+        uses: tj-actions/changed-files@v44
         with:
           files_yaml: |
             database:
@@ -56,6 +56,7 @@ jobs:
               - '.github/workflows/ci.yaml'
               - 'Dockerfile'
             documentation:
+              - 'docs/**'
               - 'priv/documentation/**'
               - '**.ex'
               - '**.md'
@@ -96,6 +97,9 @@ jobs:
     if: ${{ !startsWith(github.head_ref, 'release-please--branches') && needs.Changed.outputs.elixir == 'true' }}
     needs: [Changed]
     runs-on: ubuntu-latest
+
+    env:
+      MIX_ENV: test
 
     steps:
       - name: Checkout
@@ -213,4 +217,33 @@ jobs:
             otp: 25
           - elixir: 1.15
             otp: 26
+
+  Trivy_Filesystem:
+    if: ${{ !startsWith(github.head_ref, 'release-please--branches') }}
+    name: Trivy Filesystem Scan
+    runs-on: ubuntu-latest
+
+    permissions:
+      contents: read
+      id-token: write
+      pull-requests: write
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup Elixir
+        uses: stordco/actions-elixir/setup@v1
+        with:
+          github-token: ${{ secrets.GH_PERSONAL_ACCESS_TOKEN }}
+          hex-token: ${{ secrets.HEX_API_KEY }}
+          oban-fingerprint: ${{ secrets.OBAN_KEY_FINGERPRINT }}
+          oban-token: ${{ secrets.OBAN_LICENSE_KEY }}
+
+      - name: Trivy Scan
+        uses: stordco/actions-trivy@v1.1.1
+        with:
+          github-token: ${{ secrets.GH_PERSONAL_ACCESS_TOKEN }}
+          scan-type: fs
+          slack-bot-token: ${{ secrets.SLACK_BOT_TOKEN }}
 

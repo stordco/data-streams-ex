@@ -30,7 +30,7 @@ jobs:
               return;
             }
 
-            const REGEX = /^(feat!|fix!|fix|feat|chore|(fix|feat|chore)\(\w.*\)):\s(\[\w{1,8}-\d{1,8}\]|.*).*/;
+            const REGEX = /^(feat!|fix!|hotfix!|fix|feat|chore|hotfix|(fix|feat|chore|hotfix)\(\w.*\)):\s(\[\w{1,8}-\d{1,8}\]|.*).*/;
 
             if (!REGEX.test(title)) {
               core.setFailed("Pull request title does not follow conventional commits");
@@ -43,7 +43,10 @@ jobs:
                 fix: [JIRA-1234] fix an existing feature
                 feat: [JIRA-1234] a new feature to release
                 feat!: a breaking change
+                hotfix: needed in production immediately
 
-            Note: Adding ! (i.e. \`feat!:\`) represents a breaking change and will result in a SemVer major release.
+            Adding ! (i.e. \`feat!:\`) represents a breaking change and will result in a SemVer major release.
+
+            Starting a commit with \`hotfix\` will result in a seperate hotfix release PR.
                 `.trim());
             }
