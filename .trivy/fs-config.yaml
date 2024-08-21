@@ -1,0 +1,18 @@
+# This file is synced with stordco/common-config-elixir. Any changes will be overwritten.
+
+exit-code: '1'
+format: 'json'
+output: 'trivy-fs-results.json'
+scanners:
+  - vuln
+severity:
+  - CRITICAL
+  - HIGH
+  - MEDIUM
+  - LOW
+  - UNKNOWN
+timeout: '3m'
+vulnerability:
+  type:
+    - os
+    - library

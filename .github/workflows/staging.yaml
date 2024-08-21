@@ -26,6 +26,9 @@ jobs:
 
     runs-on: ubuntu-latest
 
+    env:
+      MIX_ENV: test
+
     steps:
       - name: Checkout
         uses: actions/checkout@v4
