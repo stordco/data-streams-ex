@@ -241,7 +241,7 @@ jobs:
           oban-token: ${{ secrets.OBAN_LICENSE_KEY }}
 
       - name: Trivy Scan
-        uses: stordco/actions-trivy@v1.1.1
+        uses: stordco/actions-trivy@v1
         with:
           github-token: ${{ secrets.GH_PERSONAL_ACCESS_TOKEN }}
           scan-type: fs
