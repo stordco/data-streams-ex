@@ -33,10 +33,11 @@ jobs:
     runs-on: ubuntu-latest
 
     outputs:
-      database: ${{ steps.changed.outputs.database_any_changed }}
-      docker: ${{ steps.changed.outputs.docker_any_changed }}
-      elixir: ${{ steps.changed.outputs.elixir_any_changed }}
-      helm: ${{ steps.changed.outputs.helm_any_changed }}
+      database: ${{ steps.changed.outputs.database }}
+      docker: ${{ steps.changed.outputs.docker }}
+      documentation: ${{ steps.changed.outputs.documentation }}
+      elixir: ${{ steps.changed.outputs.elixir }}
+      helm: ${{ steps.changed.outputs.helm }}
 
     steps:
       - name: Checkout
@@ -46,32 +47,37 @@ jobs:
 
       - id: changed
         name: Get Changed Files
-        uses: tj-actions/changed-files@v44
-        with:
-          files_yaml: |
-            database:
-              - '.github/workflows/ci.yaml'
-              - 'priv/*repo/**'
-            docker:
-              - '.github/workflows/ci.yaml'
-              - 'Dockerfile'
-            documentation:
-              - 'docs/**'
-              - 'priv/documentation/**'
-              - '**.ex'
-              - '**.md'
-            elixir:
-              - '.github/workflows/ci.yaml'
-              - '.tool-versions'
-              - 'priv/**'
-              - '**.ex'
-              - '**.exs'
-              - '**.heex'
-            helm:
-              - '.github/workflows/ci.yaml'
-              - '.github/workflows/staging.yaml'
-              - '.github/workflows/production.yaml'
-              - 'helm/**'
+        run: |
+          # Using fetch-depth 2 above, we should always be able to get the full list of changes files:
+          # - In a pull-request, GHA merges the PR branch into main
+          # - When pushed to main, we always squash merge, so there is only one new commit
+
+          CHANGED_FILES=$(git diff --name-only HEAD^1 HEAD)
+
+          declare -A patterns
+          patterns["database"]=".github/workflows/ci.yaml priv/.*repo/.*"
+          patterns["docker"]=".github/workflows/ci.yaml Dockerfile"
+          patterns["documentation"]="docs/.* priv/documentation/.* .*.ex .*.md"
+          patterns["elixir"]=".github/workflows/ci.yaml .tool-versions priv/.* .*.ex .*.exs .*.heex"
+          patterns["helm"]=".github/workflows/ci.yaml .github/workflows/staging.yaml .github/workflows/production.yaml helm/.*"
+
+          for filetype in ${!patterns[@]}; do
+            found="false"
+            echo "==> Checking: $filetype"
+            for pattern in ${patterns[$filetype]}; do
+              for changed_file in $CHANGED_FILES; do
+                if [[ "$changed_file" =~ $pattern ]]; then
+                  echo "====> Found change: $changed_file"
+                  found="true"
+                  break
+                fi
+              done
+              if [[ "$found" == "true" ]]; then
+                break
+              fi
+            done
+            echo "$filetype=$found" >> $GITHUB_OUTPUT
+          done
 
   Credo:
     if: ${{ !startsWith(github.head_ref, 'release-please--branches') && needs.Changed.outputs.elixir == 'true' }}
@@ -246,4 +252,6 @@ jobs:
           github-token: ${{ secrets.GH_PERSONAL_ACCESS_TOKEN }}
           scan-type: fs
           slack-bot-token: ${{ secrets.SLACK_BOT_TOKEN }}
+          slack-channel-id: ${{ secrets.SLACK_SECURITY_ALERTS }}
+          update-db: false
 
