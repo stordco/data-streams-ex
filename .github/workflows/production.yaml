@@ -8,11 +8,6 @@ on:
       - released
       - prereleased
   workflow_dispatch:
-    helm_chart_version:
-      default: "5.13.0"
-      description: "Helm Chart Version"
-      required: false
-      type: string
 
 concurrency:
   group: Production

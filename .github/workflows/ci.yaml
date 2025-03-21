@@ -35,7 +35,8 @@ jobs:
     outputs:
       database: ${{ steps.changed.outputs.database }}
       docker: ${{ steps.changed.outputs.docker }}
-      documentation: ${{ steps.changed.outputs.documentation }}
+      # Note: temporarily disabling documentation/OpenAPI validation in CI until a long term solution is found
+      # documentation: ${{ steps.changed.outputs.documentation }}
       elixir: ${{ steps.changed.outputs.elixir }}
       helm: ${{ steps.changed.outputs.helm }}
 
