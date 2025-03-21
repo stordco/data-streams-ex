@@ -8,16 +8,6 @@ on:
       - main
       - code-freeze/**
   workflow_dispatch:
-    helm_chart_prerelease:
-      default: false
-      description: "Helm Chart Prerelease"
-      required: false
-      type: boolean
-    helm_chart_version:
-      default: "~>5"
-      description: "Helm Chart Version"
-      required: false
-      type: string
 
 concurrency:
   group: Staging
