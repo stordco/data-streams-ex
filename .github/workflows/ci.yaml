@@ -213,7 +213,7 @@ jobs:
         run: mix compile --warnings-as-errors
 
       - name: Test
-        run: mix coveralls.github
+        run: mix coveralls.github --warnings-as-errors
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
