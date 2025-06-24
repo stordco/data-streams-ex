@@ -95,7 +95,8 @@
         #
         {Credo.Check.Readability.AliasAs, false},
         {Credo.Check.Readability.AliasOrder, []},
-        {Credo.Check.Readability.BlockPipe, []},
+        # We previously had this check enabled, but we have agreed to loosen this restriction to allow for more flexibility.
+        # {Credo.Check.Readability.BlockPipe, []},
         {Credo.Check.Readability.FunctionNames, []},
         {Credo.Check.Readability.ImplTrue, []},
         {Credo.Check.Readability.LargeNumbers, [trailing_digits: 2]},
@@ -112,7 +113,9 @@
         {Credo.Check.Readability.RedundantBlankLines, []},
         {Credo.Check.Readability.Semicolons, []},
         {Credo.Check.Readability.SeparateAliasRequire, []},
-        {Credo.Check.Readability.SinglePipe, []},
+        # We previously had this check enabled, but we have agreed to loosen this restriction.
+        # Use common sense, piping a single arg into an arity 1 function like `input |> do_something()` should be avoided.
+        # {Credo.Check.Readability.SinglePipe, []},
         {Credo.Check.Readability.SpaceAfterCommas, []},
         {Credo.Check.Readability.Specs, false},
         {Credo.Check.Readability.StrictModuleLayout,
@@ -146,7 +149,8 @@
         {Credo.Check.Refactor.NegatedConditionsWithElse, []},
         {Credo.Check.Refactor.NegatedIsNil, []},
         {Credo.Check.Refactor.Nesting, []},
-        {Credo.Check.Refactor.PipeChainStart, []},
+        # We have an exception for `from` which is useful for piping a query into a `Repo` function.
+        {Credo.Check.Refactor.PipeChainStart, [excluded_functions: ["from"]]},
         {Credo.Check.Refactor.UnlessWithElse, []},
         {Credo.Check.Refactor.VariableRebinding, false},
         {Credo.Check.Refactor.WithClauses, []},

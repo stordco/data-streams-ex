@@ -21,6 +21,11 @@
       "type": "chore",
       "section": "Miscellaneous",
       "hidden": false
+    },
+    {
+      "type": "docs",
+      "section": "Miscellaneous",
+      "hidden": false
     }
   ],
   "draft": false,
