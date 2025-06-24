@@ -164,7 +164,7 @@ jobs:
           oban-token: ${{ secrets.OBAN_LICENSE_KEY }}
 
       - name: Docs
-        run: mix docs
+        run: mix docs --warnings-as-errors
 
   Format:
     if: ${{ !startsWith(github.head_ref, 'release-please--branches') && needs.Changed.outputs.elixir == 'true' }}

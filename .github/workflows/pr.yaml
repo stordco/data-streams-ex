@@ -30,7 +30,7 @@ jobs:
               return;
             }
 
-            const REGEX = /^(feat!|fix!|hotfix!|fix|feat|chore|hotfix|(fix|feat|chore|hotfix)\(\w.*\)):\s(\[\w{1,8}-\d{1,8}\]|.*).*/;
+            const REGEX = /^(feat!|fix!|hotfix!|fix|feat|chore|hotfix|docs|(fix|feat|chore|hotfix|docs)\(\w.*\)):\s(\[\w{1,8}-\d{1,8}\]|.*).*/;
 
             if (!REGEX.test(title)) {
               core.setFailed("Pull request title does not follow conventional commits");
