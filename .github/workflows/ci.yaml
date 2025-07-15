@@ -255,6 +255,7 @@ jobs:
         with:
           github-token: ${{ secrets.GH_PERSONAL_ACCESS_TOKEN }}
           scan-type: fs
+          exclude-target-pattern: '^deps\/'
           slack-bot-token: ${{ secrets.SLACK_BOT_TOKEN }}
           slack-channel-id: ${{ secrets.SLACK_SECURITY_ALERTS }}
           update-db: false
