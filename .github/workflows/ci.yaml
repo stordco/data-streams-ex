@@ -260,3 +260,4 @@ jobs:
           slack-channel-id: ${{ secrets.SLACK_SECURITY_ALERTS }}
           update-db: false
 
+
